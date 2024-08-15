@@ -1,0 +1,9 @@
+configuration {
+	display-drun: "Applications:";
+	display-window: "Windows:";
+	drun-display-format:"{icon} {name}";
+	font: "FiraMono Nerd Font 11";
+	modi: "window,run,drun";
+	show-icons: true;
+}
+@theme "/home/matijak/.config/rofi/themes/everforest1.rasi"

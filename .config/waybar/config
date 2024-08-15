@@ -1,0 +1,50 @@
+{
+    "layer" : "top",
+    "position" : "top",
+    "height" : 30,
+    "modules-left" : ["user","hyprland/workspaces"],
+    "modules-center" : ["hyprland/window"],
+    "modules-right" : ["cpu","memory","temperature","tray","clock"],
+    "user" : {
+        "format" : " matijak",
+        "interval" : 60,
+    },
+    "hyprland/workspaces" : {
+        "active-only" : false,
+        "persistent-workspaces": {
+            "*": 5, // 5 workspaces by default on every monitor
+        },
+        "format" : "{icon}",
+        "format-icons": {
+            "1": "",
+            "2": "",
+            "3": "",
+            "4": "",
+            "5": "", 
+        },
+    },
+    "hyprland/window" : {
+        "icon" : true,
+        "icon-size" : 14,
+        "rewrite" : {
+            "" : "󱂬 No windows open",
+            "(.*) — Mozilla Firefox" : "Mozilla Firefox",
+        }
+    },
+    "cpu" : {
+        "format" : "Cpu: {}%",
+        "interval" : 10,
+    },
+    "memory" : {
+        "format" : "Mem: {}%",
+        "interval" : 10,
+    },
+    "clock" : {
+        "format" : "{:%H:%M %D}"
+    },
+    "temperature" : {
+        "hwmon-path": "/sys/devices/pci0000:00/0000:00:03.1/0000:06:00.0/hwmon/hwmon0/temp1_input",
+        "format": "Temp: {temperatureC}°C "
+    }
+    
+}

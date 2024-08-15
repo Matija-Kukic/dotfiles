@@ -1,0 +1,93 @@
+"$schema" = "https://raw.githubusercontent.com/JanDeDobbeleer/oh-my-posh/main/themes/schema.json"
+final_space = true
+console_title_template = "{{ .Shell }} in {{ .Folder }}"
+version = 2
+
+[palette]
+    black = "#272e33"
+    red = "#e67e80"
+    orange = "#e69875"
+    yellow = "#dbbc7f"
+    green = "#a7c080"
+    blue = "#7fbbb3"
+    aqua = "#83c092"
+    purple = "#d699b6"
+    fg = "#d3c6aa"
+		
+
+[[blocks]]
+	newline = true
+    type = "prompt"
+    alignment = "left"
+    [[blocks.segments]]
+    	type = "text"
+        style = "plain"
+        background = "transparent"
+        foreground = "p:green"
+        template = "  "
+	[[blocks.segments]]
+		type="session"
+		background = "transparent"
+		foreground = "p:aqua"
+		template = " {{ .UserName}} "	
+
+	[[blocks.segments]] 
+		type="path"
+		style ="plain"	
+		background = "transparent"
+		foreground = "p:purple"
+		template = " {{.Parent}}{{.Path}} "
+		[blocks.segments.properties]
+		style ="folder"
+
+	[[blocks.segments]]
+		type ="git"
+		style = "plain"
+		background = "transparent"
+		foreground = "p:orange"
+	[[blocks.segments]]
+		type = "python"
+		style = "plain"
+		background = "transparent"
+		foreground = "p:blue"
+		template = " {{.Venv}} "
+			
+[[blocks]]
+	type = "prompt"
+	alignment = "left"
+	newline = true	
+	[[blocks.segments]]
+			type="text"
+			background = "transparent"	
+			#foreground = "p:aqua"
+			style = "plain"
+			template = "  "	
+			foreground_templates = [
+									"{{if gt .Code 0}}p:red{{end}}",
+									"{{if eq .Code 0}}p:aqua{{end}}",
+									]
+[[blocks]]
+	type ="rprompt"
+	[[blocks.segments]]
+		type = "executiontime"
+		style = "plain"
+		foreground = 'p:yellow'					
+		background = "transparent"
+		template = "{{ .FormattedMs}}"
+		[blocks.segments.properties]
+			threshold = 3000
+
+	[[blocks.segments]]
+		type = "time"
+		style = "plain"
+		foreground = "p:fg"
+		background = "transparent"
+	
+								   
+[transient_prompt]
+	type="text"
+	background = "transparent"	
+	foreground = "p:aqua"
+	style = "plain"
+	template = "  "
+
