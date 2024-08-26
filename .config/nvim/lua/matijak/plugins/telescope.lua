@@ -8,7 +8,7 @@ return {
     },
 
     config = function()
-        require("matijak.plugins.config.telescope") 
+        require("matijak.plugins.config.telescope")
     end
 }
 

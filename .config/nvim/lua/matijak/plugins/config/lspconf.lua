@@ -13,9 +13,10 @@ lspconf.lua_ls.setup({
         }
     }
 })
-lspconf.pylsp.setup({
+lspconf.pyright.setup({
     capabilities = capabilities,
 })
+
 
 local augroup = vim.api.nvim_create_augroup
 local matijakgroup = augroup('matijak', {})
