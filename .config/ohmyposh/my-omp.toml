@@ -36,15 +36,19 @@ version = 2
 		style ="plain"	
 		background = "transparent"
 		foreground = "p:purple"
-		template = " {{.Parent}}{{.Path}} "
+		template = " {{.Path}} "
 		[blocks.segments.properties]
-		style ="folder"
+		style ="agnoster"
 
 	[[blocks.segments]]
 		type ="git"
 		style = "plain"
 		background = "transparent"
 		foreground = "p:orange"
+        template = "{{ .HEAD }}{{if .BranchStatus }} {{ .BranchStatus }}{{ end }}{{ if .Working.Changed }} \uF044 {{ .Working.String }}{{ end }}{{ if .Staging.Changed }} \uF046 {{ .Staging.String }}{{ end }}"
+        [blocks.segments.properties]
+            fetch_status = true
+            fetch_upstream_icon = false
 	[[blocks.segments]]
 		type = "python"
 		style = "plain"
