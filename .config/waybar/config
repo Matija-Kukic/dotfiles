@@ -29,6 +29,7 @@
         "rewrite" : {
             "" : "󱂬 No windows open",
             "(.*) — Mozilla Firefox" : "Mozilla Firefox",
+            "(.*) — Mozilla Firefox Private Browsing" : "Mozilla Firefox Private Browsing",
         }
     },
     "cpu" : {
