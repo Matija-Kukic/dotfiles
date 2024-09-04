@@ -28,5 +28,5 @@ alias tmat="tmux attach -t"
 alias tmas="tmux attach"
 
 alias la="ls -la --color"
-alias ll="ls -l --color"
+alias lc="ls --color=never"
 alias ls="ls --color"
