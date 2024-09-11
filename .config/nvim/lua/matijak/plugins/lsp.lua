@@ -2,8 +2,12 @@ return {
     {
         "williamboman/mason.nvim",
         config = function()
-            require("mason").setup()
-        end
+            require("mason").setup({
+                ensure_installed = {
+                    "black",
+                },
+            })
+        end,
     },
     {
         "williamboman/mason-lspconfig.nvim",
@@ -13,9 +17,9 @@ return {
                     "lua_ls",
                     "pylsp",
                     "pyright",
-                }
+                },
             })
-        end
+        end,
     },
     {
         "L3MON4D3/LuaSnip",
@@ -33,16 +37,22 @@ return {
             "hrsh7th/cmp-path",
             "hrsh7th/cmp-cmdline",
             "L3MON4D3/LuaSnip",
-            "saadparwaiz1/cmp_luasnip"
+            "saadparwaiz1/cmp_luasnip",
         },
         config = function()
             require("matijak.plugins.config.cmp")
-        end
+        end,
     },
     {
         "neovim/nvim-lspconfig",
         config = function()
             require("matijak.plugins.config.lspconf")
-        end
+        end,
+    },
+    {
+        "mhartington/formatter.nvim",
+        config = function()
+            require("matijak.plugins.config.format")
+        end,
     },
 }
