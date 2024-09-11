@@ -13,7 +13,7 @@ version = 2
     aqua = "#83c092"
     purple = "#d699b6"
     fg = "#d3c6aa"
-		
+
 
 [[blocks]]
 	newline = true
@@ -29,11 +29,11 @@ version = 2
 		type="session"
 		background = "transparent"
 		foreground = "p:aqua"
-		template = " {{ .UserName}} "	
+		template = " {{ .UserName}} "
 
-	[[blocks.segments]] 
+	[[blocks.segments]]
 		type="path"
-		style ="plain"	
+		style ="plain"
 		background = "transparent"
 		foreground = "p:purple"
 		template = " {{.Path}} "
@@ -45,7 +45,7 @@ version = 2
 		style = "plain"
 		background = "transparent"
 		foreground = "p:orange"
-        template = "{{ .HEAD }}{{if .BranchStatus }} {{ .BranchStatus }}{{ end }}{{ if .Working.Changed }} \uF044 {{ .Working.String }}{{ end }}{{ if .Staging.Changed }} \uF046 {{ .Staging.String }}{{ end }}"
+        template = "{{ .HEAD }}{{if .BranchStatus }} {{ .BranchStatus }}{{ end }}{{ if .Working.Changed }} \uF044 {{ .Working.String }}{{ end }}{{ if .Staging.Changed }} \uF046 {{ .Staging.String }}{{ end }} "
         [blocks.segments.properties]
             fetch_status = true
             fetch_upstream_icon = false
@@ -55,17 +55,24 @@ version = 2
 		background = "transparent"
 		foreground = "p:blue"
 		template = " {{.Venv}} "
-			
+    [[blocks.segments]]
+        type = "docker"
+        style = "plain"
+        powerline_symbol = ""
+        foreground = "p:yellow"
+        background = "transparent"
+        template = "  {{ .Context }} "
+
 [[blocks]]
 	type = "prompt"
 	alignment = "left"
-	newline = true	
+	newline = true
 	[[blocks.segments]]
 			type="text"
-			background = "transparent"	
+			background = "transparent"
 			#foreground = "p:aqua"
 			style = "plain"
-			template = "  "	
+			template = "  "
 			foreground_templates = [
 									"{{if gt .Code 0}}p:red{{end}}",
 									"{{if eq .Code 0}}p:aqua{{end}}",
@@ -75,7 +82,7 @@ version = 2
 	[[blocks.segments]]
 		type = "executiontime"
 		style = "plain"
-		foreground = 'p:yellow'					
+		foreground = 'p:yellow'
 		background = "transparent"
 		template = "{{ .FormattedMs}}"
 		[blocks.segments.properties]
@@ -86,12 +93,11 @@ version = 2
 		style = "plain"
 		foreground = "p:fg"
 		background = "transparent"
-	
-								   
+
+
 [transient_prompt]
 	type="text"
-	background = "transparent"	
+	background = "transparent"
 	foreground = "p:aqua"
 	style = "plain"
 	template = "  "
-
