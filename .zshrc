@@ -30,3 +30,5 @@ alias tmas="tmux attach"
 alias la="ls -la --color"
 alias lc="ls --color=never"
 alias ls="ls --color"
+
+alias vim="nvim"
