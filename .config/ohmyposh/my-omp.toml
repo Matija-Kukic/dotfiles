@@ -4,15 +4,15 @@ console_title_template = "{{ .Shell }} in {{ .Folder }}"
 version = 2
 
 [palette]
-    black = "#272e33"
-    red = "#e67e80"
-    orange = "#e69875"
-    yellow = "#dbbc7f"
-    green = "#a7c080"
-    blue = "#7fbbb3"
-    aqua = "#83c092"
-    purple = "#d699b6"
-    fg = "#d3c6aa"
+    black = "#181825"
+    red = "#f38ba8"
+    orange = "#fab387"
+    yellow = "#f9e2af"
+    green = "#a6e3a1"
+    blue = "#89b4fa"
+    aqua = "#94e2d5"
+    purple = "#cba6f7"
+    fg = "#cdd6f4"
 
 
 [[blocks]]
