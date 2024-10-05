@@ -65,6 +65,6 @@
     "custom/power": {
         "tooltip": false,
         "on-click": "wlogout &",
-        "format": "襤"
+        "format": ""
     }
 }
