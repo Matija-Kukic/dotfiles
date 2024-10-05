@@ -1,67 +1,102 @@
+@import "mocha.css";
+
 * {
-    font-family: FiraCode Nerd Font;     
-    border: none;
-    border-radius: 0;
-    font-size: 16px;
-    margin-bottom: 0px;
+  font-family: FiraMono Nerd Font;
+  font-size: 14px;
+  min-height: 0;
 }
-window#waybar {
-    background: transparent; 
+
+#waybar {
+  background: transparent;
+  color: @text;
+  margin: 5px 5px;
 }
-.modules-left{
-    background: #272e33;
-    margin-top: 5px;
-    margin-left: 10px;
-    border-radius: 20;
-    border: solid 1px #a7c080;
-    color: #d3c6aa;
-}
-#user {
-    margin-left: 15px;
-    margin-right: 10px;
-}
+
 #workspaces {
-    margin: 0px 5px;
-    padding: 0px;
+  border-radius: 1rem;
+  margin: 5px;
+  background-color: @surface0;
+  margin-left: 1rem;
 }
+
 #workspaces button {
-    color: #d3c6aa;
-}
-#workspaces button.active{
-    color: #a7c080;
-}
-.modules-center{
-    background: #272e33;
-    margin-top: 5px;
-    border-radius: 20;
-    border: solid 1px #a7c080;
-    color: #d3c6aa;
+  color: @lavender;
+  border-radius: 1rem;
+  padding: 0.4rem;
 }
 
-#window {
-    margin: 5px 10px;
-    min-height: 15px;
-}
-window#waybar.empty #window {
-    background-color: transparent;
+#workspaces button.active {
+  color: @sky;
+  border-radius: 1rem;
 }
 
-.modules-right {
-    background: #272e33;
-    margin-top: 5px; 
-    border-radius: 20;
-    border: solid 1px #a7c080;
-    color: #d3c6aa;
-    font-size: 10px;
-    margin-right: 10px;
-    padding: 5px;
+#workspaces button:hover {
+  color: @sapphire;
+  border-radius: 1rem;
 }
-#cpu {
-    margin: 0px 10px;
+
+#custom-music,
+#tray,
+#backlight,
+#clock,
+#battery,
+#pulseaudio,
+#custom-lock,
+#custom-power {
+  background-color: @surface0;
+  padding: 0.5rem 1rem;
+  margin: 5px 0;
 }
-#memory {
-    margin: 0px 10px;
-}
+
 #clock {
-    margin: 0px 10px;
+  color: @blue;
+  border-radius: 0px 1rem 1rem 0px;
+  margin-right: 1rem;
+}
+
+#battery {
+  color: @green;
+}
+
+#battery.charging {
+  color: @green;
+}
+
+#battery.warning:not(.charging) {
+  color: @red;
+}
+
+#backlight {
+  color: @yellow;
+}
+
+#backlight, #battery {
+    border-radius: 0;
+}
+
+#pulseaudio {
+  color: @maroon;
+  border-radius: 1rem 0px 0px 1rem;
+  margin-left: 1rem;
+}
+
+#custom-music {
+  color: @mauve;
+  border-radius: 1rem;
+}
+
+#custom-lock {
+    border-radius: 1rem 0px 0px 1rem;
+    color: @lavender;
+}
+
+#custom-power {
+    margin-right: 1rem;
+    border-radius: 0px 1rem 1rem 0px;
+    color: @red;
+}
+
+#tray {
+  margin-right: 1rem;
+  border-radius: 1rem;
 }
