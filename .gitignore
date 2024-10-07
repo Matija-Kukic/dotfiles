@@ -1,3 +1,5 @@
 dap.lua
 .gitignore
 .config/hypr
+hyprland.conf
+hyprpaper.conf
