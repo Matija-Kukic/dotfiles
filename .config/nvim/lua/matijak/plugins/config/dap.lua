@@ -38,6 +38,7 @@ dap.configurations.cpp = {
 		end,
 	},
 }
+dap.configurations.c = dap.configurations.cpp
 dap.adapters.python = function(cb, config)
 	if config.request == "attach" then
 		---@diagnostic disable-next-line: undefined-field
