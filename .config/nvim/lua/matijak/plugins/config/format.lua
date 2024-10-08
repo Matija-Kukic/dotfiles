@@ -6,9 +6,15 @@ require("formatter").setup({
 		lua = {
 			require("formatter.filetypes.lua").stylua,
 		},
-        python = {
-            require("formatter.filetypes.python").black,
-        },
+		python = {
+			require("formatter.filetypes.python").black,
+		},
+		c = {
+			require("formatter.filetypes.c").clangformat,
+		},
+		cpp = {
+			require("formatter.filetypes.c").clangformat,
+		},
 		["*"] = {
 			-- "formatter.filetypes.any" defines default configurations for any
 			-- filetype
@@ -17,9 +23,8 @@ require("formatter").setup({
 	},
 })
 
-vim.keymap.set('n', '<leader>fm', ':Format<CR>', { silent = true })
-vim.keymap.set('n', '<leader>fw', ':FormatWrite<CR>', { silent = true })
-
+vim.keymap.set("n", "<leader>fm", ":Format<CR>", { silent = true })
+vim.keymap.set("n", "<leader>fw", ":FormatWrite<CR>", { silent = true })
 
 local augroup = vim.api.nvim_create_augroup
 local autocmd = vim.api.nvim_create_autocmd
