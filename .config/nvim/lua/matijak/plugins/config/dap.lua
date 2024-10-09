@@ -76,14 +76,10 @@ dap.configurations.python = {
 
 		program = "${file}", -- This configuration will launch the current file if used.
 		pythonPath = function()
-			-- debugpy supports launching an application with a different interpreter then the one used to launch debugpy itself.
-			-- The code below looks for a `venv` or `.venv` folder in the current directly and uses the python within.
-			-- You could adapt this - to for example use the `VIRTUAL_ENV` environment variable.
-			local cwd = vim.fn.getcwd()
-			if vim.fn.executable(cwd .. "/venv/bin/python3") == 1 then
-				return cwd .. "/venv/bin/python3"
-			elseif vim.fn.executable(cwd .. "/.venv/bin/python3") == 1 then
-				return cwd .. "/.venv/bin/python3"
+			-- debugpy supports launching an application with a different interpreter than the one used to launch debugpy itself.
+			-- The code below uses the `VIRTUAL_ENV` environment variable if set, falling back to a default Python interpreter.
+			if vim.env.VIRTUAL_ENV then
+				return vim.env.VIRTUAL_ENV .. "/bin/python"
 			else
 				return "/usr/bin/python3"
 			end
