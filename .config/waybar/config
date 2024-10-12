@@ -28,7 +28,7 @@
         "max-length": 50
     },
     "clock": {
-        "timezone" : "EST",
+        "timezone" : "Europe/Zagreb",
         "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>",
         "format": " {:%H:%M %d/%m/%Y}"
     },
