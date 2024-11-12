@@ -1,103 +1,127 @@
-"$schema" = "https://raw.githubusercontent.com/JanDeDobbeleer/oh-my-posh/main/themes/schema.json"
+console_title_template = '{{ .Shell }} in {{ .Folder }}'
+version = 3
 final_space = true
-console_title_template = "{{ .Shell }} in {{ .Folder }}"
-version = 2
 
 [palette]
-    black = "#181825"
-    red = "#f38ba8"
-    orange = "#fab387"
-    yellow = "#f9e2af"
-    green = "#a6e3a1"
-    blue = "#89b4fa"
-    aqua = "#94e2d5"
-    purple = "#cba6f7"
-    fg = "#cdd6f4"
-
-
-[[blocks]]
-	newline = true
-    type = "prompt"
-    alignment = "left"
-    [[blocks.segments]]
-    	type = "text"
-        style = "plain"
-        background = "transparent"
-        foreground = "p:green"
-        template = "  "
-	[[blocks.segments]]
-		type="session"
-		background = "transparent"
-		foreground = "p:aqua"
-		template = " {{ .UserName}} "
-
-	[[blocks.segments]]
-		type="path"
-		style ="plain"
-		background = "transparent"
-		foreground = "p:purple"
-		template = " {{.Path}} "
-		[blocks.segments.properties]
-		style ="agnoster"
-
-	[[blocks.segments]]
-		type ="git"
-		style = "plain"
-		background = "transparent"
-		foreground = "p:orange"
-        template = "{{ .HEAD }}{{if .BranchStatus }} {{ .BranchStatus }}{{ end }}{{ if .Working.Changed }} \uF044 {{ .Working.String }}{{ end }}{{ if .Staging.Changed }} \uF046 {{ .Staging.String }}{{ end }} "
-        [blocks.segments.properties]
-            fetch_status = true
-            fetch_upstream_icon = false
-	[[blocks.segments]]
-		type = "python"
-		style = "plain"
-		background = "transparent"
-		foreground = "p:blue"
-		template = " {{.Venv}} "
-    [[blocks.segments]]
-        type = "docker"
-        style = "plain"
-        powerline_symbol = ""
-        foreground = "p:yellow"
-        background = "transparent"
-        template = "  {{ .Context }} "
-
-[[blocks]]
-	type = "prompt"
-	alignment = "left"
-	newline = true
-	[[blocks.segments]]
-			type="text"
-			background = "transparent"
-			#foreground = "p:aqua"
-			style = "plain"
-			template = "  "
-			foreground_templates = [
-									"{{if gt .Code 0}}p:red{{end}}",
-									"{{if eq .Code 0}}p:aqua{{end}}",
-									]
-[[blocks]]
-	type ="rprompt"
-	[[blocks.segments]]
-		type = "executiontime"
-		style = "plain"
-		foreground = 'p:yellow'
-		background = "transparent"
-		template = "{{ .FormattedMs}}"
-		[blocks.segments.properties]
-			threshold = 3000
-
-	[[blocks.segments]]
-		type = "time"
-		style = "plain"
-		foreground = "p:fg"
-		background = "transparent"
-
+  aqua = '#94e2d5'
+  black = '#181825'
+  blue = '#89b4fa'
+  fg = '#cdd6f4'
+  green = '#a6e3a1'
+  orange = '#fab387'
+  purple = '#cba6f7'
+  red = '#f38ba8'
+  yellow = '#f9e2af'
 
 [transient_prompt]
-	type="text"
-	background = "transparent"
-	foreground = "p:aqua"
-	style = "plain"
-	template = "  "
+  template = '  '
+  foreground = 'p:aqua'
+  background = 'transparent'
+  type = 'text'
+  style = 'plain'
+
+[[blocks]]
+  type = 'prompt'
+  alignment = 'left'
+  newline = true
+
+  [[blocks.segments]]
+    template = '  '
+    foreground = 'p:green'
+    background = 'transparent'
+    type = 'text'
+    style = 'plain'
+
+    [blocks.segments.properties]
+      cache_duration = 'none'
+
+  [[blocks.segments]]
+    template = ' {{ .UserName}} '
+    foreground = 'p:aqua'
+    background = 'transparent'
+    type = 'session'
+
+    [blocks.segments.properties]
+      cache_duration = 'none'
+
+  [[blocks.segments]]
+    template = ' {{.Path}} '
+    foreground = 'p:purple'
+    background = 'transparent'
+    type = 'path'
+    style = 'plain'
+
+    [blocks.segments.properties]
+      cache_duration = 'none'
+      style = 'agnoster'
+
+  [[blocks.segments]]
+    template = '{{ .HEAD }}{{if .BranchStatus }} {{ .BranchStatus }}{{ end }}{{ if .Working.Changed }}  {{ .Working.String }}{{ end }}{{ if .Staging.Changed }}  {{ .Staging.String }}{{ end }} '
+    foreground = 'p:orange'
+    background = 'transparent'
+    type = 'git'
+    style = 'plain'
+
+    [blocks.segments.properties]
+      cache_duration = 'none'
+      fetch_status = true
+      fetch_upstream_icon = false
+
+  [[blocks.segments]]
+    template = ' {{.Venv}} '
+    foreground = 'p:blue'
+    background = 'transparent'
+    type = 'python'
+    style = 'plain'
+
+    [blocks.segments.properties]
+      cache_duration = 'none'
+
+  [[blocks.segments]]
+    template = '  {{ .Context }} '
+    foreground = 'p:yellow'
+    powerline_symbol = ''
+    background = 'transparent'
+    type = 'docker'
+    style = 'plain'
+
+    [blocks.segments.properties]
+      cache_duration = 'none'
+
+[[blocks]]
+  type = 'prompt'
+  alignment = 'left'
+  newline = true
+
+  [[blocks.segments]]
+    template = '  '
+    background = 'transparent'
+    type = 'text'
+    style = 'plain'
+    foreground_templates = ['{{if gt .Code 0}}p:red{{end}}', '{{if eq .Code 0}}p:aqua{{end}}']
+
+    [blocks.segments.properties]
+      cache_duration = 'none'
+
+[[blocks]]
+  type = 'rprompt'
+
+  [[blocks.segments]]
+    template = '{{ .FormattedMs}}'
+    foreground = 'p:yellow'
+    background = 'transparent'
+    type = 'executiontime'
+    style = 'plain'
+
+    [blocks.segments.properties]
+      cache_duration = 'none'
+      threshold = 3000
+
+  [[blocks.segments]]
+    foreground = 'p:fg'
+    background = 'transparent'
+    type = 'time'
+    style = 'plain'
+
+    [blocks.segments.properties]
+      cache_duration = 'none'
