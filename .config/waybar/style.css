@@ -2,7 +2,7 @@
 
 * {
   font-family: FiraMono Nerd Font;
-  font-size: 14px;
+  font-size: 12px;
   min-height: 0;
 }
 
@@ -16,7 +16,7 @@
   border-radius: 1rem;
   margin: 5px;
   background-color: @surface0;
-  margin-left: 1rem;
+  margin-left: 0.75rem;
 }
 
 #workspaces button {
@@ -91,7 +91,7 @@
 }
 
 #custom-power {
-    margin-right: 1rem;
+    margin-right: 0.75rem;
     border-radius: 0px 1rem 1rem 0px;
     color: @red;
 }
