@@ -9,9 +9,10 @@ autoload -Uz compinit
 compinit
 _comp_options+=(globdots)
 
-fastfetch -c examples/10.jsonc
+fastfetch 
 
 export XDG_CONFIG_HOME=$HOME/.config
+export PATH="/home/matijak/.config/emacs/bin:$PATH" 
 
 eval "$(oh-my-posh init zsh --config $HOME/.config/ohmyposh/my-omp.toml)"
 
@@ -35,6 +36,7 @@ alias lc="ls --color=never"
 alias ls="ls --color"
 
 alias vim="nvim"
+alias code="codium --disable-gpu"
 
 # >>> conda initialize >>>
 # !! Contents within this block are managed by 'conda init' !!

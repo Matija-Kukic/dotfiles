@@ -38,13 +38,13 @@ return {
 			require("matijak.plugins.config.neotree")
 		end,
 	},
-	{
-		"rcarriga/nvim-dap-ui",
-		dependencies = { "mfussenegger/nvim-dap", "nvim-neotest/nvim-nio" },
-		config = function()
-			require("matijak.plugins.config.dap")
-		end,
-	},
+	--{
+	--	"rcarriga/nvim-dap-ui",
+	--	dependencies = { "mfussenegger/nvim-dap", "nvim-neotest/nvim-nio" },
+	--	config = function()
+	--		require("matijak.plugins.config.dap")
+	--	end,
+	--},
 	{
 		"iamcco/markdown-preview.nvim",
 		cmd = { "MarkdownPreviewToggle", "MarkdownPreview", "MarkdownPreviewStop" },
