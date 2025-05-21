@@ -5,15 +5,6 @@ return {
 			require("mason").setup({
 				ensure_installed = {
 					"black",
-				},
-			})
-		end,
-	},
-	{
-		"williamboman/mason-lspconfig.nvim",
-		config = function()
-			require("mason-lspconfig").setup({
-				ensure_installed = {
 					"lua_ls",
 					"pylsp",
 					"pyright",
@@ -22,6 +13,7 @@ return {
 			})
 		end,
 	},
+
 	{
 		"L3MON4D3/LuaSnip",
 		version = "v2.*", -- Use the latest released major version
