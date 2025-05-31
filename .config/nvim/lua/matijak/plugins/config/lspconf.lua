@@ -27,6 +27,24 @@ lspconf.pyright.setup({
 lspconf.clangd.setup({
 	capabilities = capabilities,
 })
+lspconf.texlab.setup({
+	capabilities = capabilities,
+	settings = {
+		texlab = {
+			bibtexFormatter = "texlab",
+			--	build = {
+			--	executable = "latexmk",
+			--	forwardSearchAfter = true,
+			--	onSave = false,
+			--},
+			forwardSearch = {
+				executable = "okular", -- or skim/sumatrapdf
+			},
+			auxDirectory = "build",
+			diagnosticsDelay = 300,
+		},
+	},
+})
 
 local augroup = vim.api.nvim_create_augroup
 local matijakgroup = augroup("matijak", {})

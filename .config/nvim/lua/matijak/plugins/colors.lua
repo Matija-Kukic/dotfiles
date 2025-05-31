@@ -40,4 +40,8 @@ return {
 			vim.cmd.colorscheme("catppuccin-mocha")
 		end,
 	},
+	{
+		dir = "/home/matijak/Documents/programiranje/projects/Color",
+		name = "tealy",
+	},
 }
