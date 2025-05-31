@@ -9,6 +9,7 @@ return {
 					"pylsp",
 					"pyright",
 					"clangd",
+					"texlab",
 				},
 			})
 		end,
