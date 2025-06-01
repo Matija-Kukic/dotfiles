@@ -41,6 +41,7 @@ lspconf.texlab.setup({
 				executable = "okular", -- or skim/sumatrapdf
 			},
 			auxDirectory = "build",
+			bibliography = { "references.bib" },
 			diagnosticsDelay = 300,
 		},
 	},

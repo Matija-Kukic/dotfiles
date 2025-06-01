@@ -9,7 +9,7 @@ vim.g.vimtex_compiler_latexmk = {
 		"-shell-escape",
 		"-interaction=nonstopmode",
 		"-synctex=1",
-		"-use-biber", -- for biblatex+biber
+		"-bibtex",
 	},
 }
 vim.keymap.set("n", "<leader>ltc", "<cmd>VimtexCompile<CR>", { desc = "LaTeX Compile" })
