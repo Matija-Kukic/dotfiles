@@ -32,6 +32,7 @@ return {
 			"hrsh7th/cmp-cmdline",
 			"L3MON4D3/LuaSnip",
 			"saadparwaiz1/cmp_luasnip",
+			"onsails/lspkind.nvim",
 		},
 		config = function()
 			require("matijak.plugins.config.cmp")
@@ -44,9 +45,9 @@ return {
 		end,
 	},
 	{
-		"mhartington/formatter.nvim",
+		"stevearc/conform.nvim",
 		config = function()
-			require("matijak.plugins.config.format")
+			require("matijak.plugins.config.conform")
 		end,
 	},
 }

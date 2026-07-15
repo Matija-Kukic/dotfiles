@@ -2,7 +2,7 @@
 vim.g.mapleader = " "
 
 -------REMAPS-----------
-vim.keymap.set("n", "<leader>pv", vim.cmd.Ex)
+--vim.keymap.set("n", "<leader>pv", vim.cmd.Ex)
 
 vim.keymap.set("n", "<leader>wsv", "<C-w>v")
 vim.keymap.set("n", "<leader>wsh", "<C-w>s")
@@ -11,4 +11,8 @@ vim.keymap.set("n", "<leader>wk", "<C-w>k")
 vim.keymap.set("n", "<leader>wj", "<C-w>j")
 vim.keymap.set("n", "<leader>wh", "<C-w>h")
 
-
+vim.opt.number = true
+vim.opt.relativenumber = true
+vim.keymap.set("n", "<leader>cn", function()
+	vim.opt.relativenumber = not vim.opt.relativenumber:get()
+end, { desc = "Toggle relative line numbers" })

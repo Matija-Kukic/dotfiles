@@ -1,0 +1,18 @@
+name: sverac
+root: ~/Documents/skola/sverac/ispiti
+
+
+on_project_start:  
+windows:
+  - ispit:
+      panes:
+        - cd MI2526  
+  - stari:
+      panes:
+        - cd probe
+  - template:
+      panes:
+        - cd template_ispit 
+  - labosi:
+      panes:
+        - cd ../labosi

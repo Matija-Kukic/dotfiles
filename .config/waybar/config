@@ -13,7 +13,9 @@
          "format-icons": {
              "default": "",
          },
-     },
+        "all-outputs": false, 
+
+    },
     "tray": {
         "icon-size": 21,
         "spacing": 10

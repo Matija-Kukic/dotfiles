@@ -65,7 +65,8 @@ final_space = true
     [blocks.segments.properties]
       cache_duration = 'none'
       fetch_status = true
-      fetch_upstream_icon = false
+      fetch_upstream_icon = false 
+      enable_untracked_cache = true
 
   [[blocks.segments]]
     template = ' {{.Venv}} '
