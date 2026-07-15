@@ -4,15 +4,25 @@ SAVEHIST=1000
 bindkey -e
 zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}'
 
-
 autoload -Uz compinit
-compinit
+if [[ ! -f ~/.zcompdump || ~/.zshrc -nt ~/.zcompdump ]]; then
+    compinit
+else
+    compinit -C
+fi
 _comp_options+=(globdots)
 
-fastfetch 
+if [[ -z "$TMUX" ]]; then
+    fastfetch
+fi
 
 export XDG_CONFIG_HOME=$HOME/.config
 export PATH="/home/matijak/.config/emacs/bin:$PATH" 
+export PATH="/opt/riscv32i/bin:$PATH" 
+export PATH="/home/matijak/.cargo/bin:$PATH" 
+export PATH=/usr/lib64/mpi/gcc/openmpi5/bin:$PATH
+export PATH=/usr/local/cuda-13.2/bin:$PATH
+export LD_LIBRARY_PATH=/usr/lib64/mpi/gcc/openmpi5/lib64:$LD_LIBRARY_PATH
 
 eval "$(oh-my-posh init zsh --config $HOME/.config/ohmyposh/my-omp.toml)"
 
@@ -36,7 +46,12 @@ alias lc="ls --color=never"
 alias ls="ls --color"
 
 alias vim="nvim"
-alias code="codium --disable-gpu"
+alias kssh="kitten ssh"
+
+alias mkcpp='bear -- g++ -std=c++17 *.cpp'
+alias mkc='bear -- gcc *.c'
+alias mux='tmuxinator.ruby4.0'
+alias muxs='tmuxinator.ruby4.0 start --no-attach'
 
 # >>> conda initialize >>>
 # !! Contents within this block are managed by 'conda init' !!
@@ -52,3 +67,5 @@ alias code="codium --disable-gpu"
 #fi
 #unset __conda_setup
 # <<< conda initialize <<<
+
+. "$HOME/.local/share/../bin/env"

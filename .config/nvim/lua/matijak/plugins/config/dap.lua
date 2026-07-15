@@ -1,12 +1,14 @@
 local dap = require("dap")
-local dapui = require("dapui")
+--local dapui = require("dapui")
+local dapview = require("dap-view")
 
 --dap.setup()
-dapui.setup()
+--dapui.setup()
 
+dapview.setup({})
 vim.keymap.set("n", "<leader>dt", function()
-	dapui.toggle()
-end)
+	dapview.toggle()
+end, { desc = "Dap view toggle" })
 
 dap.adapters.cppdbg = {
 	id = "cppdbg",
@@ -93,16 +95,16 @@ dap.configurations.python = {
 
 vim.keymap.set("n", "<Leader>db", function()
 	require("dap").toggle_breakpoint()
-end)
+end, { desc = "Toggle breakpoint" })
 vim.keymap.set("n", "<Leader>dc", function()
 	require("dap").continue()
-end)
+end, { desc = "Debugger continue" })
 vim.keymap.set("n", "<Leader>dso", function()
 	require("dap").step_over()
-end)
+end, { desc = "Debugger step over" })
 vim.keymap.set("n", "<Leader>dsi", function()
 	require("dap").step_into()
-end)
+end, { desc = "Debugger step into" })
 vim.keymap.set("n", "<Leader>dst", function()
 	require("dap").step_out()
-end)
+end, { desc = "Debugger step out" })

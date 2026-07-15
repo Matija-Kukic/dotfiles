@@ -33,15 +33,21 @@ return {
 		--end
 	},
 	{
+		"fynnfluegge/monet.nvim",
+	},
+	{
 		"catppuccin/nvim",
 		lazy = false,
+		name = "catppuccin",
 		priority = 1000,
 		config = function()
 			vim.cmd.colorscheme("catppuccin-mocha")
+			require("catppuccin").setup({
+				integrations = {
+					treesitter = true,
+					native_lsp = { enabled = true },
+				},
+			})
 		end,
-	},
-	{
-		dir = "/home/matijak/Documents/programiranje/projects/Color",
-		name = "tealy",
 	},
 }

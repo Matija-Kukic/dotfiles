@@ -1,0 +1,23 @@
+name: fervolo
+root: ~/Documents/skola/diplomski/fervolo
+
+
+on_project_start:  
+  - sudo wg-quick up mlkukic
+  - eval $(ssh-agent)
+  - ssh-add ~/.ssh/id_rsa
+  - ssh-add ~/.ssh/bpi_f3_key
+  - source test-suite/.venv/bin/activate
+windows:
+  - editor:
+      panes:
+        - nvim .
+  - run:
+      panes:
+        -
+  - test:
+      panes:
+        - cd test-suite
+  - bpi-ssh:
+      panes:
+        -
