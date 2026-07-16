@@ -167,14 +167,6 @@ return {
 		--     "DiffviewLog",
 		-- },
 	},
-
-	{
-		"will133/vim-dirdiff",
-		cmd = "DirDiff",
-		init = function()
-			vim.g.DirDiffExcludes = ".git,.svn,CVS,*.swp,node_modules,target,.DS_Store"
-		end,
-	},
 	{
 		"amitds1997/remote-nvim.nvim",
 		version = "*",
