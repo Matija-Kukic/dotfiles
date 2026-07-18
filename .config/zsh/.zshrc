@@ -162,3 +162,6 @@ if (( $+commands[oh-my-posh] )); then
 fi
 
 
+
+# opencode
+export PATH=/home/matijak/.opencode/bin:$PATH
