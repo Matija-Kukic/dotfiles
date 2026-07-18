@@ -123,6 +123,7 @@ alias mkc='bear -- gcc *.c'
 alias mux='tmuxinator.ruby4.0'
 alias muxs='tmuxinator.ruby4.0 start --no-attach'
 
+alias wget="wget --hsts-file=$XDG_DATA_HOME/wget-hsts"
 
 # ── Conda ──────────────────────────────────────────────────────
 
@@ -159,4 +160,5 @@ if (( $+commands[oh-my-posh] )); then
             --config "$XDG_CONFIG_HOME/ohmyposh/my-omp.toml"
     )"
 fi
+
 
