@@ -1,5 +1,11 @@
 return {
 	{
+		"nvim-treesitter/nvim-treesitter",
+		dependencies = { "neovim-treesitter/treesitter-parser-registry" },
+		lazy = false,
+		build = ":TSUpdate",
+	},
+	{
 		"ojroques/nvim-bufdel",
 		config = function()
 			require("bufdel").setup({
