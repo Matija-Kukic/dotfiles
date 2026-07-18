@@ -2,19 +2,21 @@ HISTFILE=~/.histfile
 HISTSIZE=1000
 SAVEHIST=1000
 bindkey -e
-zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}'
+zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}' cache-path "$XDG_CACHE_HOME"/zsh/zcompcache
 
 autoload -Uz compinit
-if [[ ! -f ~/.zcompdump || ~/.zshrc -nt ~/.zcompdump ]]; then
-    compinit
-else
-    compinit -C
-fi
-_comp_options+=(globdots)
 
-if [[ -z "$TMUX" ]]; then
-    fastfetch
+ZCOMPDUMP="${XDG_CACHE_HOME:-$HOME/.cache}/zsh/zcompdump-$ZSH_VERSION"
+
+mkdir -p -- "${ZCOMPDUMP:h}"
+
+if [[ ! -f "$ZCOMPDUMP" || "${ZDOTDIR:-$HOME}/.zshrc" -nt "$ZCOMPDUMP" ]]; then
+    compinit -d "$ZCOMPDUMP"
+else
+    compinit -C -d "$ZCOMPDUMP"
 fi
+
+_comp_options+=(globdots)
 
 export XDG_CONFIG_HOME=$HOME/.config
 export PATH="/home/matijak/.config/emacs/bin:$PATH" 
