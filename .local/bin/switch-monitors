@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+
+set -e
+
+HYPR_DIR="$HOME/dotfiles/.config/hypr"
+LINK="$HYPR_DIR/confs/active-monitor.conf"
+
+current="$(readlink "$LINK")"
+
+if [[ "$current" == "monitors/home.conf" ]]; then
+    ln -sfn monitors/hotplug.conf "$LINK"
+    hyprctl reload
+    sleep 0.5
+    for i in {1..10}; do
+        hyprctl dispatch moveworkspacetomonitor "$i" eDP-1
+    done
+    notify-send "Hyprland" "Switched to HOTPLUG config"
+else
+    ln -sfn monitors/home.conf "$LINK"
+    hyprctl reload
+    sleep 0.5
+    for i in {1..5}; do
+        hyprctl dispatch moveworkspacetomonitor "$i" DP-1
+    done
+    for i in {6..10}; do
+        hyprctl dispatch moveworkspacetomonitor "$i" eDP-1
+    done
+    notify-send "Hyprland" "Switched to HOME config"
+fi
