@@ -1,53 +1,21 @@
-return {
-	{
-		"sainnhe/everforest",
-		--lazy = false,
-		--priority = 1000,
-		--config = function()
-		--Optionally configure and load the colorscheme
-		--directly inside the plugin declaration.
-		--	vim.g.everforest_enable_italic = true
-		--	vim.g.everforest_background = "hard"
-		--	vim.o.background = "dark"
-		--	vim.cmd.colorscheme("everforest")
-		--end,
-	},
-	{
-		"sainnhe/gruvbox-material",
-		lazy = false,
-		priority = 1000,
-		--config = function()
-		--Optionally configure and load the colorscheme
-		--directly inside the plugin declaration.
-		--vim.g.gruvbox_material_enable_italic = true
-		----------------vim.cmd.colorscheme('gruvbox-material')
-		--end
-	},
-	{
-		"folke/tokyonight.nvim",
-		--lazy = false,
-		--priority = 1000,
-		--opts = {},
-		--config = function()
-		--vim.cmd.colorscheme('tokyonight')
-		--end
-	},
-	{
-		"fynnfluegge/monet.nvim",
-	},
-	{
-		"catppuccin/nvim",
-		lazy = false,
-		name = "catppuccin",
-		priority = 1000,
-		config = function()
-			vim.cmd.colorscheme("catppuccin-mocha")
-			require("catppuccin").setup({
-				integrations = {
-					treesitter = true,
-					native_lsp = { enabled = true },
-				},
-			})
-		end,
-	},
+-- All theme plugins stay declared (lazy) so :Lazy clean never removes them;
+-- the active colorscheme's spec (priority + config) is merged on top from
+-- ~/.config/colorschemes/active/neovim.lua (managed by switch-theme).
+
+local plugins = {
+	{ "catppuccin/nvim", name = "catppuccin", lazy = true },
+	{ "sainnhe/everforest", lazy = true },
+	{ "sainnhe/gruvbox-material", lazy = true },
+	{ "folke/tokyonight.nvim", lazy = true },
+	{ "fynnfluegge/monet.nvim", lazy = true },
 }
+
+local scheme = vim.env.HOME .. "/.config/colorschemes/active/neovim.lua"
+local ok, active = pcall(dofile, scheme)
+if ok and active then
+	vim.list_extend(plugins, active)
+else
+	vim.notify("colorscheme file missing: " .. scheme, vim.log.levels.WARN)
+end
+
+return plugins

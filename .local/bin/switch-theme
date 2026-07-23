@@ -1,0 +1,51 @@
+#!/usr/bin/env bash
+# switch-theme — repoint colorschemes/active and reload themed apps.
+# The ONLY mutation is the symlink; see REFACTOR_COLORS.md.
+set -euo pipefail
+
+SCHEMES="$HOME/dotfiles/.config/colorschemes"
+ACTIVE="$SCHEMES/active"
+
+case "${1:-current}" in
+    current)
+        basename "$(readlink "$ACTIVE")"
+        exit 0
+        ;;
+    list)
+        find "$SCHEMES" -mindepth 1 -maxdepth 1 -type d -printf '%f\n' | sort
+        exit 0
+        ;;
+esac
+
+scheme="$1"
+if [[ ! -d "$SCHEMES/$scheme" ]]; then
+    echo "Unknown theme '$scheme'. Available:" >&2
+    "$0" list >&2
+    exit 1
+fi
+
+# ── The ONLY mutation ──
+ln -sfn "$scheme" "$ACTIVE"
+
+# ── Reloads (best-effort, never fatal) ──
+hyprctl reload &>/dev/null || true
+
+pgrep -x kitty &>/dev/null && kill -USR1 $(pgrep -x kitty) || true
+
+[[ -f "$ACTIVE/alacritty.toml" ]] && touch "$ACTIVE/alacritty.toml" || true  # mtime bump → alacritty watcher
+
+pkill -SIGUSR2 waybar 2>/dev/null || true                  # waybar reloads CSS in place
+
+tmux source-file "$HOME/.config/tmux/tmux.conf" &>/dev/null || true
+
+if [[ -e "$ACTIVE/wallpaper" ]]; then
+    hyprctl hyprpaper reload ,"$ACTIVE/wallpaper" &>/dev/null || true
+fi
+
+if [[ -f "$ACTIVE/gtk-theme-name" ]] && command -v gsettings &>/dev/null; then
+    gsettings set org.gnome.desktop.interface gtk-theme \
+        "$(cat "$ACTIVE/gtk-theme-name")" 2>/dev/null || true
+fi
+
+notify-send "Theme" "Switched to $scheme" 2>/dev/null || true
+echo "Switched to $scheme (restart nvim / opencode / GTK apps to fully apply)"
