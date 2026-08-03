@@ -4,26 +4,43 @@ set -e
 
 HYPR_DIR="$HOME/dotfiles/.config/hypr"
 LINK="$HYPR_DIR/confs/active-monitor.conf"
+LAPTOP="eDP-1"
+
+# First connected monitor that isn't the laptop panel (works for DP-1/DP-3/HDMI-*)
+EXT="$(hyprctl monitors -j | python3 -c '
+import json, sys
+mons = json.load(sys.stdin)
+ext = [m["name"] for m in mons if m["name"] != "eDP-1"]
+print(ext[0] if ext else "")')"
+
+move() { hyprctl dispatch moveworkspacetomonitor "$1" "$2" &>/dev/null || true; }
 
 current="$(readlink "$LINK")"
 
 if [[ "$current" == "monitors/home.conf" ]]; then
+    # ── switch to HOTPLUG (1-5 laptop, 6-10 external when present) ──
     ln -sfn monitors/hotplug.conf "$LINK"
     hyprctl reload
     sleep 0.5
-    for i in {1..10}; do
-        hyprctl dispatch moveworkspacetomonitor "$i" eDP-1
-    done
-    notify-send "Hyprland" "Switched to HOTPLUG config"
+    for i in {1..5}; do move "$i" "$LAPTOP"; done
+    if [[ -n "$EXT" ]]; then
+        for i in {6..10}; do move "$i" "$EXT"; done
+        notify-send "Hyprland" "HOTPLUG: 1-5 on $LAPTOP, 6-10 on $EXT"
+    else
+        for i in {6..10}; do move "$i" "$LAPTOP"; done
+        notify-send "Hyprland" "HOTPLUG: all 10 on $LAPTOP"
+    fi
 else
+    # ── switch to HOME (1-5 external, 6-10 laptop) ──
     ln -sfn monitors/home.conf "$LINK"
     hyprctl reload
     sleep 0.5
-    for i in {1..5}; do
-        hyprctl dispatch moveworkspacetomonitor "$i" DP-1
-    done
-    for i in {6..10}; do
-        hyprctl dispatch moveworkspacetomonitor "$i" eDP-1
-    done
-    notify-send "Hyprland" "Switched to HOME config"
+    if [[ -n "$EXT" ]]; then
+        for i in {1..5}; do move "$i" "$EXT"; done
+        for i in {6..10}; do move "$i" "$LAPTOP"; done
+        notify-send "Hyprland" "HOME: 1-5 on $EXT, 6-10 on $LAPTOP"
+    else
+        for i in {1..10}; do move "$i" "$LAPTOP"; done
+        notify-send "Hyprland" "HOME: no external monitor, all 10 on $LAPTOP"
+    fi
 fi

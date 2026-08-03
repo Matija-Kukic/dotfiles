@@ -27,6 +27,12 @@ fi
 # ── The ONLY mutation ──
 ln -sfn "$scheme" "$ACTIVE"
 
+# Record the active scheme name for watchers: a symlink repoint is invisible
+# to inotify, but a changed path forces any FileView to reload from scratch.
+STATE_DIR="$HOME/.local/state/colorscheme"
+mkdir -p "$STATE_DIR"
+echo "$scheme" > "$STATE_DIR/active"
+
 # ── Reloads (best-effort, never fatal) ──
 hyprctl reload &>/dev/null || true
 

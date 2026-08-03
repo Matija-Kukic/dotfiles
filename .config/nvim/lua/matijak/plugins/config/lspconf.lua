@@ -53,6 +53,12 @@ vim.lsp.config("texlab", {
 })
 vim.lsp.enable("texlab")
 
+--qml
+--vim.lsp.config("qmlls", {
+--	capabilities = capabilities,
+--})
+--vim.lsp.enable("qmlls")
+
 local augroup = vim.api.nvim_create_augroup
 local autocmd = vim.api.nvim_create_autocmd
 
