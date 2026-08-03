@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+# qs-bar-toggle — flip the quickshell bar variant (full <-> mini), live.
+set -euo pipefail
+
+STATE_DIR="$HOME/.local/state/quickshell"
+FILE="$STATE_DIR/bar-variant"
+mkdir -p "$STATE_DIR"
+
+current="$(cat "$FILE" 2>/dev/null || echo full)"
+if [[ "$current" == "full" ]]; then
+    echo mini > "$FILE"
+else
+    echo full > "$FILE"
+fi
+
+notify-send "Quickshell" "Bar variant: $(cat "$FILE")" 2>/dev/null || true

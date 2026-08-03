@@ -4,6 +4,8 @@ opencode.json
 .opencode
 SESSION.md
 REFACTOR_COLORS.md
+QUICKSHELL_REFACTOR.md
 .config/tmux/plugins
 
 
+.qmlls.ini

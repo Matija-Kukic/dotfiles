@@ -1,0 +1,11 @@
+{
+  "bg": "#1e1e2e",
+  "surface": "#313244",
+  "surfaceHigh": "#45475a",
+  "fg": "#cdd6f4",
+  "muted": "#6c7086",
+  "accent": "#cba6f7",
+  "accentAlt": "#89b4fa",
+  "error": "#f38ba8",
+  "warn": "#f9e2af"
+}
