@@ -23,7 +23,7 @@ _darcs
 # Your additions
 ^/\.opencode
 ^/opencode\.json
-^/*\.md
+^/\.llm
 ^/reference
 ^/\.omo
 ^/\.codegraph
