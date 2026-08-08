@@ -1,0 +1,151 @@
+#!/usr/bin/env python3
+# caelestia — shim for the caelestia CLI, bridged to OUR mechanisms (R4).
+# The shell calls this in ~8 places (Schemes/M3Variants/Colours/Wallpapers/
+# Recorder). We implement only what they call; everything else exits 1.
+#
+#   scheme list                      → JSON {name: {flavour: {colours}}} from ~/.config/colorschemes
+#   scheme get -nfv                  → "name\nflavour\nvariant" of the active colorscheme
+#   scheme set -n NAME [-f FLAVOUR]  → switch-theme NAME
+#   scheme set -m MODE [--notify]    → no-op (our schemes are dark-only) + notification
+#   scheme set -v VARIANT            → no-op (no dynamic M3 variants)
+#   wallpaper -f PATH [--no-smart]   → write ~/.local/state/caelestia/wallpaper/path.txt
+#   wallpaper -r [--no-smart]        → random image from CAELESTIA_WALLPAPERS_DIR
+#   wallpaper -p PATH [--no-smart]   → print current scheme.json (dynamic preview; unused:
+#                                      Wallpapers only calls it when scheme == "dynamic")
+#   record [-r] [-s]  (not running)  → wf-recorder start (-r region via slurp, -s audio)
+#   record          (running)        → stop: SIGINT wf-recorder
+#   record -p     (running)          → pause: unsupported by wf-recorder → notification
+import glob
+import json
+import os
+import random
+import shutil
+import subprocess
+import sys
+import time
+
+SCHEMES = os.path.expanduser("~/.config/colorschemes")
+STATE = os.path.expanduser("~/.local/state/caelestia")
+ACTIVE_NAME = os.path.expanduser("~/.local/state/colorscheme/active")
+WALL_DIR = os.environ.get("CAELESTIA_WALLPAPERS_DIR",
+                          os.path.expanduser("~/dotfiles/wallpapers"))
+IMG_EXT = (".jpg", ".jpeg", ".png", ".webp")
+
+
+def notify(summary, body=""):
+    subprocess.run(["notify-send", "-a", "caelestia", summary, body],
+                   capture_output=True)
+
+
+def write_atomic(path, text):
+    tmp = path + ".tmp"
+    with open(tmp, "w") as f:
+        f.write(text)
+    os.replace(tmp, path)
+
+
+def set_wallpaper(path):
+    write_atomic(os.path.join(STATE, "wallpaper", "path.txt"), path + "\n")
+
+
+def scheme_list():
+    out = {}
+    for d in sorted(os.listdir(SCHEMES)):
+        if os.path.islink(os.path.join(SCHEMES, d)):  # skip the `active` symlink
+            continue
+        qj = os.path.join(SCHEMES, d, "quickshell.json")
+        if not os.path.isfile(qj):
+            continue
+        with open(qj) as f:
+            q = json.load(f)
+        # Launcher SchemeItem consumes surface/primary/outline (hex without #)
+        out[d] = {"dark": {
+            "surface": q["surface"].lstrip("#"),
+            "primary": q["accent"].lstrip("#"),
+            "outline": q["muted"].lstrip("#"),
+        }}
+    print(json.dumps(out))
+
+
+def scheme_get():
+    with open(ACTIVE_NAME) as f:
+        name = f.read().strip()
+    print(f"{name}\ndark\ntonalspot")
+
+
+def scheme_set(args):
+    if "-m" in args:  # light/dark toggle — our schemes are dark-only
+        if "--notify" in args:
+            notify("Color scheme", "Only dark schemes are installed")
+        return
+    if "-v" in args:  # M3 variant — dynamic-scheme concept, N/A
+        return
+    if "-n" in args:
+        subprocess.run(["switch-theme", args[args.index("-n") + 1]])
+        return
+    sys.exit("caelestia shim: scheme set needs -n/-m/-v")
+
+
+def wallpaper(args):
+    if "-f" in args:
+        set_wallpaper(args[args.index("-f") + 1])
+    elif "-r" in args:
+        walls = [p for p in glob.glob(os.path.join(WALL_DIR, "**"), recursive=True)
+                 if p.lower().endswith(IMG_EXT)]
+        if not walls:
+            sys.exit(f"caelestia shim: no images in {WALL_DIR}")
+        set_wallpaper(random.choice(walls))
+    elif "-p" in args:
+        with open(os.path.join(STATE, "scheme.json")) as f:
+            print(f.read())
+    else:
+        sys.exit("caelestia shim: wallpaper needs -f/-r/-p")
+
+
+def record(args):
+    if subprocess.run(["pidof", "wf-recorder"],
+                      capture_output=True).returncode == 0:
+        if "-p" in args:
+            notify("Recorder", "Pause is not supported by wf-recorder")
+        else:  # bare `record` while running = stop (SIGINT finalizes the file)
+            subprocess.run(["pkill", "-INT", "wf-recorder"])
+            notify("Recorder", "Recording stopped")
+        return
+    if shutil.which("wf-recorder") is None:
+        notify("Recorder", "wf-recorder is not installed: sudo zypper in wf-recorder")
+        sys.exit(1)
+    recs = os.path.join(os.environ.get("XDG_VIDEOS_DIR",
+                        os.path.expanduser("~/Videos")), "Recordings")
+    os.makedirs(recs, exist_ok=True)
+    cmd = ["wf-recorder", "-f",
+           os.path.join(recs, time.strftime("recording_%Y%m%d_%H%M%S.mp4"))]
+    if "-s" in args or "-sr" in args:
+        cmd.append("--audio")
+    if "-r" in args or "-sr" in args:
+        region = subprocess.run(["slurp"], capture_output=True, text=True)
+        if region.returncode != 0:
+            sys.exit(0)  # slurp cancelled
+        cmd += ["-g", region.stdout.strip()]
+    notify("Recorder", "Recording started")
+    os.execvp(cmd[0], cmd)
+
+
+def main():
+    args = [a for a in sys.argv[1:] if a != "--no-smart"]
+    if not args:
+        sys.exit("caelestia shim: see header for supported commands")
+    cmd, rest = args[0], args[1:]
+    if cmd == "scheme" and rest:
+        {"list": scheme_list,
+         "get": scheme_get,
+         "set": lambda: scheme_set(rest[1:])}[rest[0]]()
+    elif cmd == "wallpaper":
+        wallpaper(rest)
+    elif cmd == "record":
+        record(rest)
+    else:
+        sys.exit(f"caelestia shim: unsupported command '{' '.join(args)}'")
+
+
+if __name__ == "__main__":
+    main()

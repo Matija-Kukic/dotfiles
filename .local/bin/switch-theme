@@ -44,9 +44,9 @@ pkill -SIGUSR2 waybar 2>/dev/null || true                  # waybar reloads CSS 
 
 tmux source-file "$HOME/.config/tmux/tmux.conf" &>/dev/null || true
 
-if [[ -e "$ACTIVE/wallpaper" ]]; then
-    hyprctl hyprpaper reload ,"$ACTIVE/wallpaper" &>/dev/null || true
-fi
+# ── Caelestia shell bridge (quickshell): writes scheme.json + wallpaper/path.txt
+# (retires hyprpaper — the shell's Background module renders the wallpaper)
+caelestia-theme-bridge "$scheme" || true
 
 if [[ -f "$ACTIVE/gtk-theme-name" ]] && command -v gsettings &>/dev/null; then
     gsettings set org.gnome.desktop.interface gtk-theme \

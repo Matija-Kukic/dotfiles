@@ -1,0 +1,161 @@
+#!/usr/bin/env python3
+# caelestia-theme-bridge — feed our colorschemes into the caelestia shell.
+#
+# Reads  ~/.config/colorschemes/<scheme>/quickshell.json   (9 colors, source of truth)
+# Writes ~/.local/state/caelestia/scheme.json              (full M3 role set + term0-15)
+# Writes ~/.local/state/caelestia/wallpaper/path.txt       (resolved wallpaper path)
+#
+# scheme.json contract (from shell/services/Colours.qml load()):
+#   {name, flavour, mode, colours: {<role without m3 prefix>: "<hex WITHOUT #>", …}}
+# on* roles follow caelestia's own Colours.on(): same hue/sat, lightness 0.9 if the
+# base color is dark (hslLightness < 0.5) else 0.1.
+#
+# Called by switch-theme; can also be run standalone: caelestia-theme-bridge <scheme>
+import colorsys
+import json
+import os
+import sys
+
+SCHEMES = os.path.expanduser("~/.config/colorschemes")
+STATE = os.path.expanduser("~/.local/state/caelestia")
+
+
+def hex2rgb(h):
+    h = h.lstrip("#")
+    return tuple(int(h[i:i + 2], 16) / 255 for i in (0, 2, 4))
+
+
+def rgb2hex(r, g, b):
+    c = lambda v: max(0, min(255, round(v * 255)))
+    return f"{c(r):02x}{c(g):02x}{c(b):02x}"
+
+
+def hsl(c):  # -> (h, s, l) each 0..1
+    h, l, s = colorsys.rgb_to_hls(*hex2rgb(c))
+    return h, s, l
+
+
+def with_l(c, l, s_scale=1.0):
+    h, s, _ = hsl(c)
+    return rgb2hex(*colorsys.hls_to_rgb(h, max(0.0, min(1.0, l)),
+                                        max(0.0, min(1.0, s * s_scale))))
+
+
+def on(c):  # caelestia Colours.on()
+    _, _, l = hsl(c)
+    return with_l(c, 0.9 if l < 0.5 else 0.1)
+
+
+def mix(a, b, t):  # RGB lerp, t=0 → a, t=1 → b
+    A, B = hex2rgb(a), hex2rgb(b)
+    return rgb2hex(*[A[i] + (B[i] - A[i]) * t for i in range(3)])
+
+
+def family(c, prefix, out):
+    """The 9 M3 roles of one color family, mirroring caelestia's default relations."""
+    _, _, l = hsl(c)
+    container = with_l(c, max(0.18, min(0.35, l * 0.35)), 0.9)
+    out[f"{prefix}"] = c.lstrip("#")
+    out[f"on{prefix.capitalize()}"] = on(c)
+    out[f"{prefix}Container"] = container
+    out[f"on{prefix.capitalize()}Container"] = on(container)
+    out[f"{prefix}Fixed"] = with_l(c, 0.88)
+    out[f"{prefix}FixedDim"] = c.lstrip("#")
+    out[f"on{prefix.capitalize()}Fixed"] = with_l(c, 0.12)
+    out[f"on{prefix.capitalize()}FixedVariant"] = container
+    if prefix == "primary":
+        out["inversePrimary"] = with_l(c, max(0.35, min(0.6, l * 0.55)))
+
+
+def generate(scheme):
+    with open(os.path.join(SCHEMES, scheme, "quickshell.json")) as f:
+        q = json.load(f)
+    bg, surface, surface_high = q["bg"], q["surface"], q["surfaceHigh"]
+    fg, muted = q["fg"], q["muted"]
+    accent, accent_alt = q["accent"], q["accentAlt"]
+    error, warn = q["error"], q["warn"]
+
+    c = {}
+    # Neutrals: container ladder interpolated bg → surfaceHigh (caelestia's ladder
+    # is monotonic; our mid rung ≈ `surface`).
+    _, _, l_bg = hsl(bg)
+    c["background"] = c["surface"] = c["surfaceDim"] = bg.lstrip("#")
+    c["surfaceBright"] = surface_high.lstrip("#")
+    c["surfaceContainerLowest"] = with_l(bg, max(0.05, l_bg - 0.05))
+    c["surfaceContainerLow"] = mix(bg, surface_high, 0.35)
+    c["surfaceContainer"] = mix(bg, surface_high, 0.5)
+    c["surfaceContainerHigh"] = mix(bg, surface_high, 0.7)
+    c["surfaceContainerHighest"] = mix(bg, surface_high, 0.85)
+    c["onBackground"] = c["onSurface"] = fg.lstrip("#")
+    c["surfaceVariant"] = mix(bg, surface_high, 0.75)
+    c["onSurfaceVariant"] = mix(fg, muted, 0.35)
+    c["inverseSurface"] = fg.lstrip("#")
+    c["inverseOnSurface"] = bg.lstrip("#")
+    c["outline"] = muted.lstrip("#")
+    c["outlineVariant"] = c["surfaceVariant"]
+    c["shadow"] = c["scrim"] = "000000"
+    c["surfaceTint"] = accent.lstrip("#")
+
+    # Color families
+    family(accent, "primary", c)
+    family(accent_alt, "secondary", c)
+    family(warn, "tertiary", c)
+    family(error, "error", c)
+
+    # Success has no source color in the 9; keep caelestia's sage defaults.
+    c["success"] = "B5CCBA"
+    c["onSuccess"] = "213528"
+    c["successContainer"] = "374B3E"
+    c["onSuccessContainer"] = "D1E9D6"
+
+    # Palette key colors (rarely consumed directly)
+    c["primary_paletteKeyColor"] = accent.lstrip("#")
+    c["secondary_paletteKeyColor"] = accent_alt.lstrip("#")
+    c["tertiary_paletteKeyColor"] = warn.lstrip("#")
+    c["neutral_paletteKeyColor"] = muted.lstrip("#")
+    c["neutral_variant_paletteKeyColor"] = muted.lstrip("#")
+
+    # term0-15 (only consumed by Colours.qml itself; derived from the 9):
+    # 0/8 black pair, 1/9 red=error, 2/10 green=accent, 3/11 yellow=warn,
+    # 4/12 blue=accentAlt, 5/13 magenta=lightened accent, 6/14 cyan=lightened
+    # accentAlt, 7/15 white=fg.
+    la, laa = with_l(accent, 0.85), with_l(accent_alt, 0.85)
+    terms = [surface_high, error, accent, warn, accent_alt, la, laa, fg,
+             muted, error, accent, warn, accent_alt, la, laa, with_l(fg, 0.95)]
+    for i, t in enumerate(terms):
+        c[f"term{i}"] = t.lstrip("#")
+
+    return {
+        "name": scheme,
+        "flavour": scheme,
+        "mode": "dark",
+        "colours": c,
+    }
+
+
+def write_atomic(path, text):
+    """Atomic write: FileView.reload() can fire mid-write and see partial JSON."""
+    tmp = path + ".tmp"
+    with open(tmp, "w") as f:
+        f.write(text)
+    os.replace(tmp, path)
+
+
+def main():
+    scheme = sys.argv[1] if len(sys.argv) > 1 else os.path.basename(
+        os.path.realpath(os.path.join(SCHEMES, "active")))
+    os.makedirs(os.path.join(STATE, "wallpaper"), exist_ok=True)
+
+    write_atomic(os.path.join(STATE, "scheme.json"),
+                 json.dumps(generate(scheme), indent=1))
+
+    # Resolve the per-scheme wallpaper symlink NOW (never the `active` symlink —
+    # repoints are invisible to inotify, pitfall 2).
+    wall = os.path.realpath(os.path.join(SCHEMES, scheme, "wallpaper"))
+    write_atomic(os.path.join(STATE, "wallpaper", "path.txt"), wall + "\n")
+
+    print(f"caelestia bridge: {scheme} → scheme.json + wallpaper {wall}")
+
+
+if __name__ == "__main__":
+    main()
