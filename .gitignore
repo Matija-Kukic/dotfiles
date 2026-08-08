@@ -7,5 +7,14 @@ REFACTOR_COLORS.md
 QUICKSHELL_REFACTOR.md
 .config/tmux/plugins
 
-
+reference
 .qmlls.ini
+
+# caelestia repaint: build artifacts staged inside the tracked shell dir
+shell/build/
+shell/Caelestia/
+shell/M3Shapes/
+# archived hand-made shell (fallback until R5 passes)
+.config/quickshell-legacy
+.omo
+.codegraph

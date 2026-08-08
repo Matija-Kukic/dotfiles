@@ -24,3 +24,7 @@ _darcs
 ^/\.opencode
 ^/opencode\.json
 ^/*\.md
+^/reference
+^/shell
+^/\.omo
+^/\.codegraph
