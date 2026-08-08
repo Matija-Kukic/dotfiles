@@ -114,3 +114,8 @@ yourself in the config part of the nvim folder, guide is [here](https://github.c
 | Bind | Action |
 |------|--------|
 | Super + Grave | Cycle keyboard layout (hyprctl switchxkblayout) |
+
+## Credits
+
+- The quickshell configuration in `.config/quickshell` is based on [caelestia-shell](https://github.com/caelestia-dots/shell), part of the [caelestia dots](https://github.com/caelestia-dots/caelestia) project. Huge thanks to the caelestia-dots authors and contributors.
+- This repository is licensed under the [GNU General Public License v3](LICENSE) in accordance with the upstream caelestia-shell license.
