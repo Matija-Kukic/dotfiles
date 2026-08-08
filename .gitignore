@@ -10,10 +10,12 @@ QUICKSHELL_REFACTOR.md
 reference
 .qmlls.ini
 
-# caelestia repaint: build artifacts staged inside the tracked shell dir
-shell/build/
-shell/Caelestia/
-shell/M3Shapes/
+# caelestia quickshell: build artifacts inside the tracked config dir
+.config/quickshell/build/
+.config/quickshell/.direnv/
+.config/quickshell/.cache/
+.config/quickshell/result
+.config/quickshell/.qmlls.ini
 # archived hand-made shell (fallback until R5 passes)
 .config/quickshell-legacy
 .omo

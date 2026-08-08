@@ -25,6 +25,5 @@ _darcs
 ^/opencode\.json
 ^/*\.md
 ^/reference
-^/shell
 ^/\.omo
 ^/\.codegraph
