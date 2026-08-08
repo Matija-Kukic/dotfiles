@@ -1,0 +1,111 @@
+pragma ComponentBehavior: Bound
+
+import QtQuick
+import QtQuick.Controls
+import QtQuick.Layouts
+import Quickshell.Services.Pipewire
+import Caelestia.Config
+import qs.components
+import qs.components.controls
+import qs.services
+import qs.utils
+
+Item {
+    id: root
+
+    required property PopoutState popouts
+
+    implicitWidth: layout.implicitWidth + Tokens.padding.medium * 2
+    implicitHeight: layout.implicitHeight + Tokens.padding.medium * 2
+
+    ButtonGroup {
+        id: sinks
+    }
+
+    ButtonGroup {
+        id: sources
+    }
+
+    ColumnLayout {
+        id: layout
+
+        anchors.left: parent.left
+        anchors.verticalCenter: parent.verticalCenter
+        spacing: Tokens.spacing.medium
+
+        // Horizontal volume slider matching the OSD/sidebar sliders
+        CustomMouseArea {
+            Layout.fillWidth: true
+            implicitHeight: Tokens.sizes.osd.sliderWidth
+
+            function onWheel(event: WheelEvent) {
+                if (event.angleDelta.y > 0)
+                    Audio.incrementVolume();
+                else if (event.angleDelta.y < 0)
+                    Audio.decrementVolume();
+            }
+
+            FilledSlider {
+                anchors.fill: parent
+                orientation: Qt.Horizontal
+
+                icon: Icons.getVolumeIcon(value, Audio.muted)
+                value: Audio.volume
+                to: GlobalConfig.services.maxVolume
+                onMoved: Audio.setVolume(value)
+            }
+        }
+
+        StyledText {
+            Layout.topMargin: Tokens.spacing.small
+            text: qsTr("Output device")
+            font: Tokens.font.body.builders.medium.weight(Font.Medium).build()
+        }
+
+        Repeater {
+            model: Audio.sinks
+
+            StyledRadioButton {
+                id: control
+
+                required property PwNode modelData
+
+                ButtonGroup.group: sinks
+                checked: Audio.sink?.id === modelData.id
+                onClicked: Audio.setAudioSink(modelData)
+                text: modelData.description
+            }
+        }
+
+        StyledText {
+            Layout.topMargin: Tokens.spacing.medium
+            text: qsTr("Input device")
+            font: Tokens.font.body.builders.medium.weight(Font.Medium).build()
+        }
+
+        Repeater {
+            model: Audio.sources
+
+            StyledRadioButton {
+                required property PwNode modelData
+
+                ButtonGroup.group: sources
+                checked: Audio.source?.id === modelData.id
+                onClicked: Audio.setAudioSource(modelData)
+                text: modelData.description
+            }
+        }
+
+        IconTextButton {
+            Layout.fillWidth: true
+            Layout.topMargin: Tokens.spacing.medium
+            inactiveColour: Colours.palette.m3primaryContainer
+            inactiveOnColour: Colours.palette.m3onPrimaryContainer
+            verticalPadding: Tokens.padding.extraSmall
+            text: qsTr("Open settings")
+            icon: "settings"
+
+            onClicked: root.popouts.detachRequested("audio")
+        }
+    }
+}
