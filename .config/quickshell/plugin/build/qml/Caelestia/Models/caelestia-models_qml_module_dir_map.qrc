@@ -1,0 +1,6 @@
+<RCC>
+  <qresource prefix="/">
+    <file alias="/qt/qml/Caelestia/Models">/home/matijak/dotfiles/.config/quickshell/plugin/build/qml/Caelestia/Models</file>
+
+  </qresource>
+</RCC>

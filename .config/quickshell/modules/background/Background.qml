@@ -47,7 +47,14 @@ Variants {
                 anchors.fill: parent
                 active: Config.background.wallpaperEnabled
 
-                sourceComponent: Wallpaper {}
+                sourceComponent: Wallpaper {
+                    source: {
+                        // Explicit dependency on Wallpapers.list.length forces
+                        // re-evaluation when FileSystemModel populates the list
+                        const _listLen = Wallpapers.list.length;
+                        return WallpaperResolver.resolve(Wallpapers.current, win.modelData.width / win.modelData.height);
+                    }
+                }
             }
 
             Visualiser {

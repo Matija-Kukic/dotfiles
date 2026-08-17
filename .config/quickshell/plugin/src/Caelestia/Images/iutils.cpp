@@ -1,5 +1,8 @@
 #include "iutils.hpp"
 
+#include <qimagereader.h>
+#include <qsize.h>
+
 #include "cachingimageprovider.hpp"
 
 namespace caelestia::images {
@@ -37,6 +40,21 @@ QUrl IUtils::urlForPath(const QString& path, int fillMode) {
     url.setHost(prefix);
     url.setPath(path.startsWith(QLatin1Char('/')) ? path : QLatin1Char('/') + path);
     return url;
+}
+
+qreal IUtils::imageAspect(const QString& path) {
+    if (path.isEmpty())
+        return -1.0;
+
+    QImageReader reader(path);
+    if (!reader.canRead())
+        return -1.0;
+
+    const QSize size = reader.size();
+    if (size.isEmpty() || size.height() == 0)
+        return -1.0;
+
+    return static_cast<qreal>(size.width()) / static_cast<qreal>(size.height());
 }
 
 } // namespace caelestia::images

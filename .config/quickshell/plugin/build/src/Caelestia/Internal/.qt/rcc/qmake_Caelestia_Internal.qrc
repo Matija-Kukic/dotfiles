@@ -1,0 +1,6 @@
+<RCC>
+  <qresource prefix="/qt/qml/Caelestia/Internal">
+    <file alias="qmldir">/home/matijak/dotfiles/.config/quickshell/plugin/build/qml/Caelestia/Internal/qmldir</file>
+  </qresource>
+</RCC>
+

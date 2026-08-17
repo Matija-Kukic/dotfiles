@@ -188,7 +188,10 @@ WlSessionLockSurface {
         id: wallpaperBackground
 
         CachingImage {
-            path: Wallpapers.current
+            path: {
+                const _listLen = Wallpapers.list.length;
+                return WallpaperResolver.resolve(Wallpapers.current, screen.width / screen.height);
+            }
         }
     }
 

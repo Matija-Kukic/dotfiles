@@ -1,0 +1,15 @@
+{
+	"InstallScripts" : 
+	[
+		"/home/matijak/dotfiles/.config/quickshell/plugin/build/cmake_install.cmake",
+		"/home/matijak/dotfiles/.config/quickshell/plugin/build/src/Caelestia/cmake_install.cmake",
+		"/home/matijak/dotfiles/.config/quickshell/plugin/build/src/Caelestia/Components/cmake_install.cmake",
+		"/home/matijak/dotfiles/.config/quickshell/plugin/build/src/Caelestia/Config/cmake_install.cmake",
+		"/home/matijak/dotfiles/.config/quickshell/plugin/build/src/Caelestia/Internal/cmake_install.cmake",
+		"/home/matijak/dotfiles/.config/quickshell/plugin/build/src/Caelestia/Models/cmake_install.cmake",
+		"/home/matijak/dotfiles/.config/quickshell/plugin/build/src/Caelestia/Services/cmake_install.cmake",
+		"/home/matijak/dotfiles/.config/quickshell/plugin/build/src/Caelestia/Blobs/cmake_install.cmake",
+		"/home/matijak/dotfiles/.config/quickshell/plugin/build/src/Caelestia/Images/cmake_install.cmake"
+	],
+	"Parallel" : false
+}

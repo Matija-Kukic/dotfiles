@@ -1,0 +1,2 @@
+/home/matijak/dotfiles/.config/quickshell/plugin/build/src/Caelestia/Images/caelestia-images_autogen/include/../EWIEGA46WW/moc_imagecacher.cpp.json
+/home/matijak/dotfiles/.config/quickshell/plugin/build/src/Caelestia/Images/caelestia-images_autogen/include/../EWIEGA46WW/moc_iutils.cpp.json
