@@ -1,8 +1,0 @@
-Caelestia(caelestia-core)
-Caelestia.Components(caelestia-components)
-Caelestia.Config(caelestia-config)
-Caelestia.Internal(caelestia-internal)
-Caelestia.Models(caelestia-models)
-Caelestia.Services(caelestia-services)
-Caelestia.Blobs(caelestia-blobs)
-Caelestia.Images(caelestia-images)

@@ -1,6 +1,0 @@
-<RCC>
-  <qresource prefix="/qt/qml/Caelestia/Blobs">
-    <file alias="qmldir">/home/matijak/dotfiles/.config/quickshell/plugin/build/qml/Caelestia/Blobs/qmldir</file>
-  </qresource>
-</RCC>
-
