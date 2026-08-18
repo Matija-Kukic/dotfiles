@@ -18,6 +18,10 @@ Item {
     required property Item osdPanel
     required property Item sessionPanel
     required property Item utilitiesPanel
+    // R-custom: plan fix-visual-defects task-4 — reference to the bar popouts
+    // (qs.modules.bar.popouts Wrapper). `var` (not Item): the type isn't
+    // imported here and we only touch its `hasCurrent`.
+    property var popoutsPanel
     readonly property int padding: Tokens.padding.large
     readonly property int clampedPadding: CUtils.clamp(padding - Config.border.thickness, 0, padding)
 
@@ -41,11 +45,14 @@ Item {
                 height = h;
         }
 
-        if (screenState.session) {
-            const h = sessionPanel.y - clampedPadding;
-            if (height > h)
-                height = h;
-        }
+        // R-custom: plan fix-visual-defects task-4 — the session panel is now
+        // docked BELOW this panel (sessionWrapper.anchors.top =
+        // notifications.bottom), so sessionPanel.y depends on this height and
+        // the old clamp here formed a runaway circular binding. The collision
+        // it guarded against is structurally impossible after the re-anchor:
+        // this panel can no longer extend past the session panel (the session
+        // sits below it by construction), and the global screen-height clamp
+        // below still bounds total growth.
 
         if (screenState.utilities) {
             const h = ((QsWindow.window as QsWindow)?.screen.height ?? 0) - (utilitiesPanel as Utilities.Wrapper).nonAnimHeight - Config.border.thickness * 2 - padding * 2 - Tokens.spacing.extraLarge;
@@ -79,6 +86,18 @@ Item {
             cacheBuffer: (QsWindow.window as QsWindow)?.screen.height ?? 0
 
             delegate: NotifWrapper {}
+
+            // R-custom: plan fix-visual-defects task-4 — notification ARRIVAL
+            // closes any open popout (widgets only; panels are exempt — the
+            // session panel docks BELOW this panel instead). Count growing =
+            // arrival (dismissals/expiry shrink it); the one-time 0→N fill at
+            // startup is harmless (no popout can be open yet).
+            property int prevPopupCount: 0
+            onCountChanged: {
+                if (count > prevPopupCount && popoutsPanel?.hasCurrent)
+                    popoutsPanel.hasCurrent = false;
+                prevPopupCount = count;
+            }
 
             move: Transition {
                 Anim {

@@ -16,6 +16,11 @@ Item {
     required property ScreenState screenState
     required property BarPopouts.Wrapper popouts
     required property bool fullscreen
+    // R-custom: geometric exclusion (plan fix-visual-defects task-3) —
+    // back-reference to Panels for Bar.qml checkPopout's overlap gate.
+    // `var` (not Panels type) to avoid circular imports — Bar.qml doesn't
+    // import the Panels type, it only reaches the helper functions.
+    property var panels
 
     readonly property bool disabled: Strings.testRegexList(Config.bar.excludedScreens, screen.name)
 
@@ -91,6 +96,7 @@ Item {
             screen: root.screen
             screenState: root.screenState
             popouts: root.popouts // qmllint disable incompatible-type
+            panels: root.panels // qmllint disable incompatible-type
             fullscreen: root.fullscreen
         }
     }

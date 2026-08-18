@@ -20,3 +20,7 @@ reference
 .config/quickshell-legacy
 .omo
 .codegraph
+
+# quickshell plugin build artifacts staged into the config dir (ninja install)
+.config/quickshell/Caelestia
+.config/quickshell/M3Shapes

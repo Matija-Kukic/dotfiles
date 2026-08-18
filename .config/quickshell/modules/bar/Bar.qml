@@ -20,6 +20,12 @@ Item {
     required property ScreenState screenState
     required property BarPopouts.Wrapper popouts
     required property bool fullscreen
+    // R-custom: geometric exclusion (plan fix-visual-defects task-3) —
+    // back-reference to Panels. `var` so we can call helper functions
+    // (canOpenPopout, canOpenPanel) without importing the Panels type —
+    // Bar.qml is imported BY panels/ContentWindow, so a typed import here
+    // would create a cycle.
+    property var panels
     readonly property int hPadding: Tokens.padding.large
     readonly property alias layoutRow: layoutRow
     implicitHeight: layoutRow.implicitHeight
@@ -43,6 +49,43 @@ Item {
         return ch?.entryId ?? "";
     }
 
+    // R-custom: per-popout width helper for the geometric exclusion gate.
+    // Mirrors the inner-implicit-widths set in modules/bar/popouts/*.qml;
+    // outer Content padding (tokens.padding.extraLargeIncreased = 32) is
+    // added by Content.qml's implicitWidth, matching what ClipWrapper
+    // clamps against. This is GEOMETRY INPUT, not policy — no per-name
+    // overlap rules. Fallback widths derived from BarTokens defaults
+    // (plugin/src/Caelestia/Config/tokens.hpp:163-167) + safe defaults.
+    function popoutWidth(name: string): real {
+        const extra = Tokens.padding.extraLargeIncreased;
+        let w = 0;
+        // known width map (matches modules/bar/popouts/*.qml `width`/`implicitWidth` lines)
+        if (name === "battery") w = Tokens.sizes.bar.batteryWidth;        // Battery.qml:13 — 250
+        else if (name === "network") w = Tokens.sizes.bar.networkWidth;    // Network.qml:23 — 320
+        else if (name === "kblayout") w = Tokens.sizes.bar.kbLayoutWidth;  // KbLayout.qml:18 — 320
+        else if (name === "bluetooth") w = 300;                           // Bluetooth.qml:18 — 300
+        else if (name === "audio") w = 320;                               // AudioPopout — content size estimate
+        else if (name === "brightness") w = Tokens.sizes.osd.sliderHeight; // BrightnessPopout — 150
+        else if (name === "lockstatus") w = 140;
+        else if (name === "activewindow") w = Tokens.sizes.bar.windowPreviewSize; // 400
+        // traymenu<index> names: index-specific not knowable without tray state,
+        // use the broader trayMenuWidth (TrayMenu.qml:83).
+        else if (name && name.indexOf("traymenu") === 0) w = Tokens.sizes.bar.trayMenuWidth; // 300
+        else w = 300; // safe fallback
+        return w + extra;
+    }
+
+    // R-custom: geometric exclusion (plan fix-visual-defects task-3).
+    // Single delegation to Panels.canOpenPopout — the clamp math,
+    // openPanelXRanges and console.warn gate-fire proof live in Panels.qml
+    // so there's exactly one source of truth. `panels` is untyped (Bar.qml
+    // doesn't import the Panels type to avoid cycle) — defensive null check
+    // means callers without a back-ref behave as before (no gate).
+    function popoutAllowedByPanel(name: string, center: real): bool {
+        if (!panels) return true;
+        return panels.canOpenPopout(center, popoutWidth(name));
+    }
+
     // pos = x along the bar
     function checkPopout(pos: real): void {
         const ch = layoutRow.childAt(pos, height / 2) as EntryWrapper;
@@ -62,6 +105,16 @@ Item {
             const items = (ch.item as StatusIcons).items;
             const icon = items.childAt(mapToItem(items, pos, 0).x, items.height / 2);
             if (icon) {
+                // R-custom: geometric exclusion (plan fix-visual-defects
+                // task-3) — if the would-be popout x-range overlaps an open
+                // panel / visible notifications, do NOT open. No set-then-
+                // revert: just refuse to set hasCurrent so the offsetScale
+                // animation isn't flapped.
+                const iconCenter = icon.mapToItem(root, icon.implicitWidth / 2, 0).x;
+                if (!popoutAllowedByPanel(icon.name, iconCenter)) {
+                    popouts.hasCurrent = false;
+                    return;
+                }
                 popouts.currentName = icon.name;
                 popouts.currentCenter = Qt.binding(() => icon.mapToItem(root, icon.implicitWidth / 2, 0).x);
                 popouts.hasCurrent = true;
@@ -72,7 +125,14 @@ Item {
                 const index = Math.floor(((pos - left - tray.padding * 2 + tray.spacing) / tray.layout.implicitWidth) * tray.items.count);
                 const trayItem = tray.items.itemAt(index);
                 if (trayItem) {
-                    popouts.currentName = `traymenu${index}`;
+                    // R-custom: geometric exclusion — same gate for tray popouts.
+                    const trayCenter = trayItem.mapToItem(root, trayItem.implicitWidth / 2, 0).x;
+                    const trayName = `traymenu${index}`;
+                    if (!popoutAllowedByPanel(trayName, trayCenter)) {
+                        popouts.hasCurrent = false;
+                        return;
+                    }
+                    popouts.currentName = trayName;
                     popouts.currentCenter = Qt.binding(() => trayItem.mapToItem(root, trayItem.implicitWidth / 2, 0).x);
                     popouts.hasCurrent = true;
                 } else {
@@ -84,8 +144,15 @@ Item {
             }
         } else if (id === "activeWindow") {
             if (Config.bar.popouts.activeWindow && Config.bar.activeWindow.showOnHover) {
+                // R-custom: geometric exclusion — same gate for activewindow popout.
+                const awItem = ch.item as Item;
+                const awCenter = awItem.mapToItem(root, awItem.implicitWidth / 2, 0).x ?? 0;
+                if (!popoutAllowedByPanel("activewindow", awCenter)) {
+                    popouts.hasCurrent = false;
+                    return;
+                }
                 popouts.currentName = id.toLowerCase();
-                popouts.currentCenter = (ch.item as Item).mapToItem(root, (ch.item as Item).implicitWidth / 2, 0).x ?? 0;
+                popouts.currentCenter = awCenter;
                 popouts.hasCurrent = true;
             } else {
                 // Small window-info popout disabled: hovering the title opens the dashboard instead (see Interactions.qml)

@@ -42,7 +42,14 @@ Scope {
             if (root.hasFullscreen)
                 return;
             const screenState = ShellState.forActive();
-            screenState.dashboard = !screenState.dashboard;
+            // R-custom: geometric exclusion (plan fix-visual-defects
+            // task-3) — refuse to open the dashboard if its x-range
+            // x-overlaps an already-open panel (launcher↔dashboard is
+            // geometrically overlapping — both centered). Closing is free.
+            // panels ref via ShellState (single shell-wide store).
+            const panels = ShellState.componentsForActive()?.panels ?? null;
+            if (screenState.dashboard || !panels || panels.canOpenPanel("dashboard"))
+                screenState.dashboard = !screenState.dashboard;
         }
     }
 
@@ -55,7 +62,14 @@ Scope {
             if (root.hasFullscreen)
                 return;
             const screenState = ShellState.forActive();
-            screenState.session = !screenState.session;
+            // R-custom: geometric exclusion — refuse to open the session
+            // if its x-range x-overlaps an open panel (notable case:
+            // opening session over the launcher area when launcher is
+            // already showing — geometrically disjoint normally, but
+            // the gate keeps the rule consistent and future-proof).
+            const panels = ShellState.componentsForActive()?.panels ?? null;
+            if (screenState.session || !panels || panels.canOpenPanel("session"))
+                screenState.session = !screenState.session;
         }
     }
 
@@ -68,7 +82,12 @@ Scope {
         onReleased: {
             if (!root.launcherInterrupted && !root.hasFullscreen) {
                 const screenState = ShellState.forActive();
-                screenState.launcher = !screenState.launcher;
+                // R-custom: geometric exclusion — refuse to open the
+                // launcher if its x-range x-overlaps an open panel
+                // (launcher↔dashboard is geometrically overlapping).
+                const panels = ShellState.componentsForActive()?.panels ?? null;
+                if (screenState.launcher || !panels || panels.canOpenPanel("launcher"))
+                    screenState.launcher = !screenState.launcher;
             }
             root.launcherInterrupted = false;
         }

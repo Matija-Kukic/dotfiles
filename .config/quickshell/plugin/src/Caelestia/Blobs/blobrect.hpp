@@ -92,6 +92,8 @@ protected:
 
 private:
     void checkAtRest(float speed);
+    void snapToRest();
+    bool deformationFinite() const;
 
     // Physics state
     QPointF m_prevScenePos;

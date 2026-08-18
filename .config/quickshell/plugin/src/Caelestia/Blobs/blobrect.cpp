@@ -16,20 +16,21 @@ void BlobRect::updatePolish() {
     BlobShape::updatePolish();
 
     if (m_physicsActive) {
+        // Non-finite guard: a NaN/Inf matrix component makes every comparison
+        // below false (NaN compares false to anything), so the snap-to-rest can
+        // never fire and the else-branch would re-queue markDirty() forever.
+        if (!deformationFinite()) {
+            snapToRest();
+            return;
+        }
+
         // Check if deformation is visually imperceptible
         float totalDelta = std::abs(m_dm00 - 1.0f) + std::abs(m_dm01) + std::abs(m_dm11 - 1.0f);
         float totalVel = std::abs(m_dmVel00) + std::abs(m_dmVel01) + std::abs(m_dmVel11);
 
         if (totalDelta < 0.004f && totalVel < 0.05f) {
             // Snap to rest, no visible deformation
-            m_dm00 = 1.0f;
-            m_dm01 = 0.0f;
-            m_dm11 = 1.0f;
-            m_dmVel00 = m_dmVel01 = m_dmVel11 = 0.0f;
-            m_deformMatrix = QMatrix4x4();
-            emit rawDeformMatrixChanged();
-            updateCenteredDeformMatrix();
-            m_physicsActive = false;
+            snapToRest();
         } else {
             QMetaObject::invokeMethod(
                 this,
@@ -61,8 +62,19 @@ void BlobRect::updatePhysics() {
         return;
     }
 
-    const float velX = static_cast<float>(scenePos.x() - m_prevScenePos.x()) / dt;
-    const float velY = static_cast<float>(scenePos.y() - m_prevScenePos.y()) / dt;
+    const float deltaX = static_cast<float>(scenePos.x() - m_prevScenePos.x());
+    const float deltaY = static_cast<float>(scenePos.y() - m_prevScenePos.y());
+    if (!std::isfinite(deltaX) || !std::isfinite(deltaY)) {
+        // Skip the step: a non-finite scene-position delta (broken geometry)
+        // must not reach the spring state. Still check at-rest to avoid a stuck
+        // active physics state.
+        if (m_physicsActive)
+            checkAtRest(0.0f);
+        return;
+    }
+
+    const float velX = deltaX / dt;
+    const float velY = deltaY / dt;
     m_prevScenePos = scenePos;
 
     const float speed = std::sqrt(velX * velX + velY * velY);
@@ -285,21 +297,37 @@ void BlobRect::excludeCornersRemoveLast(QQmlListProperty<BlobRect>* prop) {
 }
 
 void BlobRect::checkAtRest(float speed) {
+    // Non-finite guard (same rationale as updatePolish): a NaN component never
+    // satisfies the at-rest comparison, so the physics would run forever.
+    if (!deformationFinite()) {
+        snapToRest();
+        return;
+    }
+
     constexpr float kEpsilon = 0.002f;
     const bool atRest = std::abs(m_dm00 - 1.0f) < kEpsilon && std::abs(m_dm01) < kEpsilon &&
                         std::abs(m_dm11 - 1.0f) < kEpsilon && std::abs(m_dmVel00) < kEpsilon &&
                         std::abs(m_dmVel01) < kEpsilon && std::abs(m_dmVel11) < kEpsilon && speed < 5.0f;
 
     if (atRest) {
-        m_dm00 = 1.0f;
-        m_dm01 = 0.0f;
-        m_dm11 = 1.0f;
-        m_dmVel00 = 0.0f;
-        m_dmVel01 = 0.0f;
-        m_dmVel11 = 0.0f;
-        m_deformMatrix = QMatrix4x4(); // identity
-        emit rawDeformMatrixChanged();
-        updateCenteredDeformMatrix();
-        m_physicsActive = false;
+        snapToRest();
     }
+}
+
+void BlobRect::snapToRest() {
+    m_dm00 = 1.0f;
+    m_dm01 = 0.0f;
+    m_dm11 = 1.0f;
+    m_dmVel00 = 0.0f;
+    m_dmVel01 = 0.0f;
+    m_dmVel11 = 0.0f;
+    m_deformMatrix = QMatrix4x4(); // identity
+    emit rawDeformMatrixChanged();
+    updateCenteredDeformMatrix();
+    m_physicsActive = false;
+}
+
+bool BlobRect::deformationFinite() const {
+    return std::isfinite(m_dm00) && std::isfinite(m_dm01) && std::isfinite(m_dm11) &&
+           std::isfinite(m_dmVel00) && std::isfinite(m_dmVel01) && std::isfinite(m_dmVel11);
 }

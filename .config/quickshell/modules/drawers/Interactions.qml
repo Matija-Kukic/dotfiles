@@ -43,6 +43,34 @@ CustomMouseArea {
         return x > Math.min(width - Config.border.minThickness, root.borderThickness + panel.x) && withinPanelHeight(panel, x, y);
     }
 
+    // R-custom: geometric exclusion (plan fix-visual-defects task-3) —
+    // closing-side helper invoked by the screenState Connections above.
+    // If the named panel is just open AND the currently-displayed popout
+    // (if any) shares horizontal space, set popouts.hasCurrent = false so
+    // the popout closes. Safe to call with no popout (hasCurrent stays false).
+    function _closeOverlappingPopout(name: string): void {
+        if (!popouts?.hasCurrent) return;
+        // Reconstruct the would-be popout x-range from the live popouts
+        // geometry: the popout is centered under currentCenter, with
+        // nonAnimWidth. Read its actual width (post-current popout load).
+        const popoutW = popouts.nonAnimWidth ?? 0;
+        if (popoutW <= 0) return;
+        const popoutCenter = popouts.currentCenter;
+        // Map the same ClipWrapper clamp the open-path uses, via Panels.
+        const popoutRect = panels.popoutXRange(popoutCenter, popoutW);
+        // R-custom: task-4 signature propagation — the panel-open close side
+        // keeps counting notifications (includeNotifs=true), preserving
+        // task-3's semantics: notifications still clear/block popouts.
+        const others = panels.openPanelXRanges(name, true);
+        for (const o of others) {
+            if (panels.xRangesOverlap(popoutRect, o)) {
+                popouts.hasCurrent = false;
+                bar.closeTray();
+                return;
+            }
+        }
+    }
+
     function inTopPanel(panel: Item, x: real, y: real): bool {
         const panelHeight = panel.height * (1 - (panel.offsetScale ?? 0)); // qmllint disable missing-property
         return y >= bar.implicitHeight && y < bar.implicitHeight + Math.max(Config.border.minThickness, Config.border.thickness + panelHeight) && withinPanelWidth(panel, x, y);
@@ -145,9 +173,12 @@ CustomMouseArea {
 
             // Show/hide session on drag (session is a top panel in the topbar variant)
             if (pressed && inTopPanel(panels.sessionWrapper, dragStart.x, dragStart.y) && withinPanelWidth(panels.sessionWrapper, x, y)) {
-                if (dragY > Config.session.dragThreshold)
-                    screenState.session = true;
-                else if (dragY < -Config.session.dragThreshold)
+                if (dragY > Config.session.dragThreshold) {
+                    // R-custom: geometric exclusion (plan fix-visual-defects
+                    // task-3) — only open if x-disjoint from other open panels.
+                    if (!screenState.session && (panels.canOpenPanel("session") || !panels.sessionWrapper.width))
+                        screenState.session = true;
+                } else if (dragY < -Config.session.dragThreshold)
                     screenState.session = false;
 
                 // Show sidebar on drag if in session area and session is nearly fully visible
@@ -174,9 +205,11 @@ CustomMouseArea {
 
             // Show/hide session on drag (session is a top panel in the topbar variant)
             if (pressed && outOfSidebar && inTopPanel(panels.sessionWrapper, dragStart.x, dragStart.y) && withinPanelWidth(panels.sessionWrapper, x, y)) {
-                if (dragY > Config.session.dragThreshold)
-                    screenState.session = true;
-                else if (dragY < -Config.session.dragThreshold)
+                if (dragY > Config.session.dragThreshold) {
+                    // R-custom: geometric exclusion — only open if x-disjoint.
+                    if (!screenState.session && (panels.canOpenPanel("session") || !panels.sessionWrapper.width))
+                        screenState.session = true;
+                } else if (dragY < -Config.session.dragThreshold)
                     screenState.session = false;
             }
 
@@ -200,12 +233,18 @@ CustomMouseArea {
 
         // Show launcher on hover, or show/hide on drag if hover is disabled
         if (Config.launcher.showOnHover) {
-            if (!screenState.launcher && inTopPanel(panels.launcher, x, y))
-                screenState.launcher = true;
+            if (!screenState.launcher && inTopPanel(panels.launcher, x, y)) {
+                // R-custom: geometric exclusion — only open launcher if x-disjoint
+                // from another open panel (notably dashboard).
+                if (panels.canOpenPanel("launcher") || !panels.launcher.width)
+                    screenState.launcher = true;
+            }
         } else if (pressed && inTopPanel(panels.launcher, dragStart.x, dragStart.y) && withinPanelWidth(panels.launcher, x, y)) {
-            if (dragY > Config.launcher.dragThreshold)
-                screenState.launcher = true;
-            else if (dragY < -Config.launcher.dragThreshold)
+            if (dragY > Config.launcher.dragThreshold) {
+                // R-custom: geometric exclusion — drag-to-open also gated.
+                if (!screenState.launcher && (panels.canOpenPanel("launcher") || !panels.launcher.width))
+                    screenState.launcher = true;
+            } else if (dragY < -Config.launcher.dragThreshold)
                 screenState.launcher = false;
         }
 
@@ -215,7 +254,18 @@ CustomMouseArea {
 
         // Always update visibility based on hover if not in shortcut mode
         if (!dashboardShortcutActive) {
-            screenState.dashboard = showDashboard;
+            // R-custom: geometric exclusion — dashboard's hover-driven
+            // `= true` is gated. `= false` is left free (closing always allowed)
+            // and the activeWindow-title route is left alone — the user already
+            // has to be on the bar trigger area for that to fire, and Bar.qml
+            // checkPopout already refuses popouts there; the dashboard here is
+            // an explicit user gesture so it's safe to gate consistently.
+            if (showDashboard && !screenState.dashboard
+                    && !panels.canOpenPanel("dashboard") && panels.dashboard.width > 0) {
+                // Blocked: keep dashboard closed.
+            } else {
+                screenState.dashboard = showDashboard;
+            }
         } else if (showDashboard) {
             // If hovering over dashboard area while in shortcut mode, transition to hover control
             dashboardShortcutActive = false;
@@ -223,9 +273,11 @@ CustomMouseArea {
 
         // Show/hide dashboard on drag (for touchscreen devices)
         if (pressed && inTopPanel(panels.dashboard, dragStart.x, dragStart.y) && withinPanelWidth(panels.dashboard, x, y)) {
-            if (dragY > Config.dashboard.dragThreshold)
-                screenState.dashboard = true;
-            else if (dragY < -Config.dashboard.dragThreshold)
+            if (dragY > Config.dashboard.dragThreshold) {
+                // R-custom: geometric exclusion — drag-to-open also gated.
+                if (!screenState.dashboard && (panels.canOpenPanel("dashboard") || !panels.dashboard.width))
+                    screenState.dashboard = true;
+            } else if (dragY < -Config.dashboard.dragThreshold)
                 screenState.dashboard = false;
         }
 
@@ -269,6 +321,13 @@ CustomMouseArea {
                     root.screenState.osd = false;
                     root.panels.osd.hovered = false;
                 }
+            } else {
+                // R-custom: geometric exclusion (plan fix-visual-defects
+                // task-3) — closing side: launcher just opened, kill any
+                // active popout whose x-range overlaps it (launcher opens
+                // centered, so right-side popouts spilling into its
+                // x-range must close).
+                root._closeOverlappingPopout("launcher");
             }
         }
 
@@ -279,10 +338,24 @@ CustomMouseArea {
                 if (!inDashboardArea) {
                     root.dashboardShortcutActive = true;
                 }
+                // R-custom: geometric exclusion (plan fix-visual-defects
+                // task-3) — closing side: if dashboard just opened, kill
+                // any active popout whose x-range overlaps it.
+                root._closeOverlappingPopout("dashboard");
             } else {
                 // Dashboard hidden, clear shortcut flag
                 root.dashboardShortcutActive = false;
             }
+        }
+
+        function onSessionChanged() {
+            // R-custom: geometric exclusion — closing side. If the session
+            // just opened, kill any active popout whose x-range overlaps
+            // its right-edge column. IPC-opens (no cursor move) are the
+            // primary trigger; `qs ipc call drawers toggle session` lands
+            // here when the user wants the overlap-clear.
+            if (root.screenState.session)
+                root._closeOverlappingPopout("session");
         }
 
         function onOsdChanged() {

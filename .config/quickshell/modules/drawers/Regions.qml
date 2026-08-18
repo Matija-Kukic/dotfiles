@@ -39,7 +39,12 @@ Region {
         id: sessionRegion
 
         panel: root.panels.sessionWrapper
-        y: root.bar.clampedHeight
+        // R-custom: plan fix-visual-defects task-4 — the session panel docks
+        // BELOW the notifications panel now; add panel.y so the clickthrough
+        // input region follows it (a fixed bar-bottom region would leave the
+        // docked panel's lower part click-through). With no notifications
+        // panel.y is 0, identical to the previous fixed value.
+        y: root.bar.clampedHeight + panel.y
         height: panel.height * (1 - root.panels.session.offsetScale) + root.borderThickness
     }
 

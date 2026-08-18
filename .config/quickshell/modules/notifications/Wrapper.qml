@@ -9,6 +9,9 @@ Item {
     property alias osdPanel: content.osdPanel
     property alias sessionPanel: content.sessionPanel
     property alias utilitiesPanel: content.utilitiesPanel
+    // R-custom: plan fix-visual-defects task-4 — forwarded popouts reference;
+    // Content closes any open popout when a notification ARRIVES.
+    property alias popoutsPanel: content.popoutsPanel
 
     visible: height > 0
     anchors.topMargin: -5

@@ -196,22 +196,43 @@ StyledWindow {
         PanelBg {
             id: dashBg
 
+            // R-custom: extend the bg blob up behind the bar (popoutBg pattern,
+            // plan fix-visual-defects task 5) — hides the blob's top corners + the
+            // smin/frame junction crease behind the bar's opaque body, leaving ONE
+            // clean outward rounding below the bar edge (wifi/audio popout look).
+            property real extraHeight: 0.2
             panel: panels.dashboard
             deformAmount: 0.1
+            y: panel.y + bar.implicitHeight - panel.height * extraHeight
+            implicitHeight: panel.height * (1 + extraHeight)
         }
 
         PanelBg {
             id: launcherBg
 
+            // R-custom: extend the bg blob up behind the bar (popoutBg pattern,
+            // plan fix-visual-defects task 5) — hides the blob's top corners + the
+            // smin/frame junction crease behind the bar's opaque body, leaving ONE
+            // clean outward rounding below the bar edge (wifi/audio popout look).
+            property real extraHeight: 0.2
             panel: panels.launcher
             deformAmount: 0.1
+            y: panel.y + bar.implicitHeight - panel.height * extraHeight
+            implicitHeight: panel.height * (1 + extraHeight)
         }
 
         PanelBg {
             id: sessionBg
 
+            // R-custom: extend the bg blob up behind the bar (popoutBg pattern,
+            // plan fix-visual-defects task 5) — hides the blob's top corners + the
+            // smin/frame junction crease behind the bar's opaque body, leaving ONE
+            // clean outward rounding below the bar edge (wifi/audio popout look).
+            property real extraHeight: 0.2
             panel: panels.sessionWrapper
             deformAmount: 0.2
+            y: panel.y + bar.implicitHeight - panel.height * extraHeight
+            implicitHeight: panel.height * (1 + extraHeight)
             // R-custom: user request 2026-08-08 — flat connection where the
             // panel meets the screen edge / bar-at-edge junction; proven lever
             // from the 2026-08-08 notch fix rung 3; cornerFill:false +
@@ -392,6 +413,12 @@ StyledWindow {
             screen: root.screen
             screenState: root.screenState
             popouts: panels.popouts
+            // R-custom: geometric exclusion (plan fix-visual-defects task-3) —
+            // give the bar a back-reference to Panels so Bar.qml checkPopout
+            // can ask `panels.canOpenPopout(...)` and `panels.canOpenPanel(...)`
+            // without circular imports (Bar.qml cannot import the Panels type
+            // because panels/ContentWindow imports Bar/B.qml).
+            panels: panels
 
             fullscreen: root.hasFullscreen
         }
