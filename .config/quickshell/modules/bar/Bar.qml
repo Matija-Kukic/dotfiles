@@ -64,8 +64,9 @@ Item {
         else if (name === "network") w = Tokens.sizes.bar.networkWidth;    // Network.qml:23 — 320
         else if (name === "kblayout") w = Tokens.sizes.bar.kbLayoutWidth;  // KbLayout.qml:18 — 320
         else if (name === "bluetooth") w = 300;                           // Bluetooth.qml:18 — 300
-        else if (name === "audio") w = 320;                               // AudioPopout — content size estimate
-        else if (name === "brightness") w = Tokens.sizes.osd.sliderHeight; // BrightnessPopout — 150
+        else if (name === "audio") w = 284;                               // R-custom: 260px radio cap + 24px AudioPopout padding; Content.qml adds 32px.
+        else if (name === "brightness") w = 240;                            // R-custom: mirrors BrightnessPopout's local 240px literal; Content.qml adds 32px.
+        else if (name === "notifhistory") w = 430;                         // R-custom: mirrors NotifHistoryPopout's local 430px literal; Content.qml adds 32px.
         else if (name === "lockstatus") w = 140;
         else if (name === "activewindow") w = Tokens.sizes.bar.windowPreviewSize; // 400
         // traymenu<index> names: index-specific not knowable without tray state,

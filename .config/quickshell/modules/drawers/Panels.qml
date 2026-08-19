@@ -103,6 +103,15 @@ Item {
     // True iff a popout centered at `center` with width `popoutWidth` would
     // have a horizontally-disjoint x-range from every currently-open panel.
     function canOpenPopout(center: real, popoutWidth: real): bool {
+        // R-custom: plan quicksettings-notif-merge task-3 — launcher HARD
+        // block: while the launcher is open NO bar popout may open. This is
+        // UNCONDITIONAL, not geometric — the launcher's maxHeight ≈ full
+        // screen (launcher/Wrapper.qml:18-23), so on small screens it
+        // overlaps everything and the geometric rule can't cover it.
+        // `offsetScale < 1` is the canonical open predicate
+        // (launcher/Wrapper.qml:25,34).
+        if (launcher.offsetScale < 1)
+            return false;
         const r = popoutXRange(center, popoutWidth);
         // R-custom: task-4 — popouts STILL count the visible notifications
         // panel (includeNotifs=true): notifications close/block widgets.

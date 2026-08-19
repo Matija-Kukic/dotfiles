@@ -14,17 +14,20 @@ ColumnLayout {
 
     readonly property var monitor: Brightness.monitors.find(m => !m.isDdc) ?? Brightness.monitors[0] ?? null
 
-    spacing: Tokens.spacing.medium
+    spacing: Tokens.spacing.large
 
     StyledText {
         Layout.alignment: Qt.AlignHCenter
         text: root.monitor ? qsTr("Brightness: %1%").arg(Math.round(root.monitor.brightness * 100)) : qsTr("No brightness control detected")
+        font: Tokens.font.body.medium
     }
 
     CustomMouseArea {
         Layout.alignment: Qt.AlignHCenter
-        implicitWidth: Tokens.sizes.osd.sliderHeight
-        implicitHeight: Tokens.sizes.osd.sliderWidth
+        // R-custom: local literal deliberately replaces the shared OSD sliderHeight token.
+        implicitWidth: 240
+        // R-custom: local literal deliberately replaces the shared OSD sliderWidth token.
+        implicitHeight: 48
 
         function onWheel(event: WheelEvent) {
             if (!root.monitor)

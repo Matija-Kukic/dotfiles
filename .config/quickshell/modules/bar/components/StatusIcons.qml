@@ -45,6 +45,15 @@ StyledRect {
     color: Colours.tPalette.m3surfaceContainer
     radius: Tokens.rounding.full
 
+    // R-custom: plan quicksettings-notif-merge task-4 — the virtual
+    // notification-history entry object injected into the icons model above.
+    QtObject {
+        id: bellEntry
+
+        property string id: "NotifHistory"
+        property bool enabled: true
+    }
+
     clip: true
     implicitHeight: Tokens.sizes.bar.innerWidth
     implicitWidth: iconRow.implicitWidth + Tokens.padding.medium * 2
@@ -62,7 +71,22 @@ StyledRect {
             model: ScriptModel {
                 id: model
 
-                values: root.Config.bar.statusIcons.values.filter(e => e.enabled)
+                // R-custom: plan quicksettings-notif-merge task-4 — inject the
+                // notification-history bell as a virtual entry immediately
+                // right of brightness (appended at the end if brightness is
+                // absent/disabled). QML-side only: no config schema changes,
+                // and both monitors' bars get it through this same model.
+                // The entry is a QObject (bellEntry below) so it survives the
+                // ScriptModel update-diff as a stable identity.
+                values: {
+                    const values = root.Config.bar.statusIcons.values.filter(e => e.enabled);
+                    const idx = values.findIndex(e => e.id === "brightness");
+                    if (idx >= 0)
+                        values.splice(idx + 1, 0, bellEntry);
+                    else
+                        values.push(bellEntry);
+                    return values;
+                }
             }
 
             DelegateChooser {
@@ -151,6 +175,26 @@ StyledRect {
                         MaterialIcon {
                             animate: true
                             text: `brightness_${Math.round((Brightness.getMonitorForScreen(root.screen)?.brightness ?? 0) * 6) + 1}`
+                            color: root.colour
+                            fontStyle: Tokens.font.icon.medium
+                            fill: 1
+                        }
+                    }
+                }
+                // R-custom: plan quicksettings-notif-merge task-4 — bell entry
+                // for the notification-history popout. Mirrors the brightness
+                // delegate (margin/animate/color/fontStyle/fill). Click is
+                // deliberately INERT: hover-only, no onClicked anywhere.
+                // roleValue MUST match the injected entry's `id` exactly —
+                // DelegateChooser matching is case-sensitive.
+                DelegateChoice {
+                    roleValue: "NotifHistory"
+                    delegate: EntryWrapper {
+                        margin: Tokens.spacing.extraSmall / 2
+
+                        MaterialIcon {
+                            animate: true
+                            text: "notifications"
                             color: root.colour
                             fontStyle: Tokens.font.icon.medium
                             fill: 1

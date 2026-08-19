@@ -7,9 +7,13 @@ import qs.services
 RadioButton {
     id: root
 
+    // R-custom: opt-in width cap; Infinity preserves existing consumers.
+    property real maxContentWidth: Infinity
+
     font: Tokens.font.body.small
 
-    implicitWidth: implicitIndicatorWidth + implicitContentWidth + contentItem.anchors.leftMargin
+    // R-custom: cap only when requested so the default stays content-driven.
+    implicitWidth: Math.min(maxContentWidth, implicitIndicatorWidth + implicitContentWidth + contentItem.anchors.leftMargin)
     implicitHeight: Math.max(implicitIndicatorHeight, implicitContentHeight)
 
     indicator: Rectangle {
@@ -47,8 +51,12 @@ RadioButton {
     contentItem: StyledText {
         text: root.text
         font: root.font
+        // R-custom: bind text to the capped button width so right elision engages.
+        elide: Text.ElideRight
+        maximumLineCount: 1
         anchors.verticalCenter: parent.verticalCenter
         anchors.left: outerCircle.right
         anchors.leftMargin: Tokens.spacing.medium
+        anchors.right: parent.right
     }
 }

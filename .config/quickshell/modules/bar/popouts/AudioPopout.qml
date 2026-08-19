@@ -74,6 +74,8 @@ Item {
                 checked: Audio.sink?.id === modelData.id
                 onClicked: Audio.setAudioSink(modelData)
                 text: modelData.description
+                // R-custom: cap long PipeWire output descriptions to keep the popout bounded.
+                maxContentWidth: 260
             }
         }
 
@@ -93,6 +95,8 @@ Item {
                 checked: Audio.source?.id === modelData.id
                 onClicked: Audio.setAudioSource(modelData)
                 text: modelData.description
+                // R-custom: cap long PipeWire input descriptions to keep the popout bounded.
+                maxContentWidth: 260
             }
         }
 

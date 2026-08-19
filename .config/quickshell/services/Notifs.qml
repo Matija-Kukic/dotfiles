@@ -32,6 +32,15 @@ Singleton {
     function shouldShowPopup(): bool {
         if (props.dnd || ShellState.anySidebarOpen())
             return false;
+        // R-custom: plan quicksettings-notif-merge task-4 — while the
+        // notification-history popout is open, arrivals go silently to
+        // history (no transient top-right popup). The existing dnd/sidebar
+        // conditions stay untouched. hasCurrent is required: closing a popout
+        // only clears hasCurrent, NOT currentName (Wrapper.qml), so the name
+        // alone would suppress popups forever after the first bell hover.
+        const popouts = ShellState.componentsForActive()?.popouts;
+        if (popouts?.hasCurrent && popouts.currentName === "notifhistory")
+            return false;
         if (GlobalConfig.notifs.fullscreen === "off" && hasFullscreen())
             return false;
         return true;

@@ -123,7 +123,14 @@ Scope {
             if (root.hasFullscreen)
                 return;
             const screenState = ShellState.forActive();
-            screenState.utilities = !screenState.utilities;
+            // R-custom: plan quicksettings-notif-merge task-3 — launcher HARD
+            // block, OPEN-direction only: the shortcut may CLOSE utilities
+            // anytime (already open → toggle off), but may only OPEN it while
+            // the launcher is closed. (Note: this handler is onPressed, not
+            // onReleased — utilities toggles on press, unlike the launcher.)
+            const panels = ShellState.componentsForActive()?.panels ?? null;
+            if (screenState.utilities || !panels || panels.launcher.offsetScale >= 1)
+                screenState.utilities = !screenState.utilities;
         }
     }
 

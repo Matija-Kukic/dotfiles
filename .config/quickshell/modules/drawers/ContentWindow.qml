@@ -448,6 +448,15 @@ StyledWindow {
         component: panels
     }
 
+    // R-custom: plan quicksettings-notif-merge task-4 — expose the bar-popout
+    // wrapper per monitor so Notifs.shouldShowPopup can suppress transient
+    // popups while the notification-history popout is open.
+    ShellState.ComponentRef {
+        screen: root.screen
+        slot: "popouts"
+        component: panels.popouts
+    }
+
     component PanelBg: BlobRect {
         required property Item panel
         property real deformAmount: 0.15

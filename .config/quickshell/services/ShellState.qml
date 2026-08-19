@@ -67,6 +67,11 @@ Singleton {
         property var interactionWrapper
         property var bar
         property var panels
+        // R-custom: plan quicksettings-notif-merge task-4 — the per-monitor
+        // bar-popout wrapper (wired by drawers/ContentWindow.qml ComponentRef)
+        // so services can ask whether the notification-history popout is open
+        // (Notifs.shouldShowPopup suppression check).
+        property var popouts
 
         function find(name: string, rootItem: Item): var {
             return CUtils.findChild(rootItem ?? rootWindow?.contentItem, name);

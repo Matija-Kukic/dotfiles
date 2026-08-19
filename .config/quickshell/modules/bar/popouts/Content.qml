@@ -107,6 +107,15 @@ Item {
             sourceComponent: BrightnessPopout {}
         }
 
+        // R-custom: plan quicksettings-notif-merge task-4 — notification
+        // history. The popout itself flushes transient popups on open
+        // (NotifHistoryPopout.qml Component.onCompleted); the arriving-
+        // while-open suppression lives in services/Notifs.qml shouldShowPopup.
+        Popout {
+            name: "notifhistory"
+            sourceComponent: NotifHistoryPopout {}
+        }
+
         Popout {
             name: "audio"
             sourceComponent: AudioPopout {

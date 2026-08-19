@@ -286,7 +286,11 @@ CustomMouseArea {
 
         // Always update visibility based on hover if not in shortcut mode
         if (!utilitiesShortcutActive) {
-            screenState.utilities = showUtilities;
+            // R-custom: plan quicksettings-notif-merge task-3 — launcher HARD
+            // block, OPEN-direction only: hover may CLOSE utilities anytime
+            // (showUtilities false → false), but may only OPEN it while the
+            // launcher is closed.
+            screenState.utilities = showUtilities && (screenState.utilities || panels.launcher.offsetScale >= 1);
         } else if (showUtilities) {
             // If hovering over utilities area while in shortcut mode, transition to hover control
             utilitiesShortcutActive = false;
@@ -322,12 +326,18 @@ CustomMouseArea {
                     root.panels.osd.hovered = false;
                 }
             } else {
-                // R-custom: geometric exclusion (plan fix-visual-defects
-                // task-3) — closing side: launcher just opened, kill any
-                // active popout whose x-range overlaps it (launcher opens
-                // centered, so right-side popouts spilling into its
-                // x-range must close).
-                root._closeOverlappingPopout("launcher");
+                // R-custom: plan quicksettings-notif-merge task-3 — launcher
+                // WINS unconditionally: the moment it opens, kill ANY active
+                // popout (not just geometrically-overlapping ones — the
+                // launcher's maxHeight ≈ full screen, so on small screens it
+                // overlaps everything) and close the utilities panel. This
+                // replaces the geometric `_closeOverlappingPopout("launcher")`
+                // for the launcher case; the helper stays for the OTHER
+                // panels' handlers (dashboard/session) which keep geometric
+                // close semantics.
+                root.popouts.hasCurrent = false;
+                root.bar.closeTray();
+                root.screenState.utilities = false;
             }
         }
 
