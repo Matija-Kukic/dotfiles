@@ -41,6 +41,15 @@ Singleton {
         const popouts = ShellState.componentsForActive()?.popouts;
         if (popouts?.hasCurrent && popouts.currentName === "notifhistory")
             return false;
+        // R-custom: plan quicksettings-notif-merge task-6 — while the dashboard
+        // is open (offsetScale < 1 = canonical open predicate,
+        // dashboard/Wrapper.qml:29), arrivals go silently to history (no
+        // transient top-right popup — the popup clashed with the open
+        // dashboard). Only the dashboard suppresses; launcher/session are
+        // deliberately unaffected (session docks below the transient popup).
+        const dashboard = ShellState.componentsForActive()?.panels?.dashboard;
+        if (dashboard?.offsetScale < 1)
+            return false;
         if (GlobalConfig.notifs.fullscreen === "off" && hasFullscreen())
             return false;
         return true;

@@ -62,7 +62,48 @@ Item {
         anchors.margins: Tokens.padding.medium
         anchors.bottomMargin: 0
 
-        implicitHeight: Math.max(count.implicitHeight, titleText.implicitHeight)
+        implicitHeight: Math.max(count.implicitHeight, titleText.implicitHeight, clearLoader.implicitHeight)
+
+        // R-custom: plan quicksettings-notif-merge task-7 — keep clear-all in
+        // the title row so the list can never render beneath its hit target.
+        Loader {
+            id: clearLoader
+
+            asynchronous: true
+            anchors.right: parent.right
+            anchors.verticalCenter: parent.verticalCenter
+
+            scale: root.notifCount > 0 ? 1 : 0.5
+            opacity: root.notifCount > 0 ? 1 : 0
+            active: opacity > 0
+
+            sourceComponent: IconButton {
+                id: clearBtn
+
+                icon: "clear_all"
+                font: Tokens.font.icon.large
+                onClicked: clearTimer.start()
+
+                Elevation {
+                    anchors.fill: parent
+                    radius: parent.radius
+                    z: -1
+                    level: clearBtn.stateLayer.containsMouse ? 4 : 3
+                }
+            }
+
+            Behavior on scale {
+                Anim {
+                    type: Anim.FastSpatial
+                }
+            }
+
+            Behavior on opacity {
+                Anim {
+                    type: Anim.DefaultEffects
+                }
+            }
+        }
 
         StyledText {
             id: count
@@ -92,7 +133,8 @@ Item {
 
             anchors.verticalCenter: parent.verticalCenter
             anchors.left: count.right
-            anchors.right: parent.right
+            anchors.right: clearLoader.left
+            anchors.rightMargin: Tokens.spacing.small
             anchors.leftMargin: Tokens.spacing.extraSmall
 
             text: root.notifCount > 0 ? qsTr("notification%1").arg(root.notifCount === 1 ? "" : "s") : qsTr("Notifications")
@@ -130,9 +172,19 @@ Item {
             opacity: root.notifCount > 0 ? 0 : 1
 
             sourceComponent: ColumnLayout {
+                id: emptyState
+
                 spacing: Tokens.spacing.extraLarge
 
                 Image {
+                    // R-custom: plan quicksettings-notif-merge task-7 — keep
+                    // the logical item box bounded; dpr is decode quality only.
+                    Layout.alignment: Qt.AlignHCenter
+                    Layout.preferredWidth: clipRect.width * 0.8
+                    Layout.preferredHeight: Math.max(0,
+                        clipRect.height - emptyState.spacing - emptyCaption.implicitHeight)
+                    Layout.maximumHeight: Layout.preferredHeight
+
                     asynchronous: true
                     source: Paths.absolutePath(Config.paths.noNotifsPic)
                     fillMode: Image.PreserveAspectFit
@@ -146,6 +198,8 @@ Item {
                 }
 
                 StyledText {
+                    id: emptyCaption
+
                     Layout.alignment: Qt.AlignHCenter
                     text: qsTr("All up to date!")
                     color: Colours.palette.m3outlineVariant
@@ -211,41 +265,4 @@ Item {
         }
     }
 
-    Loader {
-        asynchronous: true
-        anchors.right: parent.right
-        anchors.bottom: parent.bottom
-        anchors.margins: Tokens.padding.medium
-
-        scale: root.notifCount > 0 ? 1 : 0.5
-        opacity: root.notifCount > 0 ? 1 : 0
-        active: opacity > 0
-
-        sourceComponent: IconButton {
-            id: clearBtn
-
-            icon: "clear_all"
-            font: Tokens.font.icon.large
-            onClicked: clearTimer.start()
-
-            Elevation {
-                anchors.fill: parent
-                radius: parent.radius
-                z: -1
-                level: clearBtn.stateLayer.containsMouse ? 4 : 3
-            }
-        }
-
-        Behavior on scale {
-            Anim {
-                type: Anim.FastSpatial
-            }
-        }
-
-        Behavior on opacity {
-            Anim {
-                type: Anim.DefaultEffects
-            }
-        }
-    }
 }

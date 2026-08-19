@@ -6,6 +6,7 @@ import qs.components
 import qs.components.controls
 import qs.modules.bar as Bar
 import qs.modules.bar.popouts as BarPopouts
+import qs.services
 
 CustomMouseArea {
     id: root
@@ -338,6 +339,13 @@ CustomMouseArea {
                 root.popouts.hasCurrent = false;
                 root.bar.closeTray();
                 root.screenState.utilities = false;
+                // R-custom: plan quicksettings-notif-merge task-8 — launcher
+                // WINS over the dashboard too: opening the launcher closes an
+                // open dashboard. Paired with Panels.openPanelXRanges skipping
+                // the dashboard range when the launcher is the named panel (so
+                // the launcher may open over it). The reverse stays blocked:
+                // the dashboard's own gate still counts the launcher's range.
+                root.screenState.dashboard = false;
             }
         }
 
@@ -352,6 +360,12 @@ CustomMouseArea {
                 // task-3) — closing side: if dashboard just opened, kill
                 // any active popout whose x-range overlaps it.
                 root._closeOverlappingPopout("dashboard");
+                // R-custom: plan quicksettings-notif-merge task-6 — flush a
+                // transient notification popup that is already visible when
+                // the dashboard opens: it would overlap the dashboard for up
+                // to its 5s lifetime. Same pattern as the notification-history
+                // popout / sidebar dock (Notifs.list.forEach → popup = false).
+                Notifs.list.forEach(n => n.popup = false);
             } else {
                 // Dashboard hidden, clear shortcut flag
                 root.dashboardShortcutActive = false;

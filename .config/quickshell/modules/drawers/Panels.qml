@@ -76,7 +76,14 @@ Item {
             out.push({x: sessionWrapper.x, width: sessionWrapper.width});
         if (name !== "launcher" && launcher.offsetScale < 1 && launcher.width > 0)
             out.push({x: launcher.x, width: launcher.width});
-        if (name !== "dashboard" && dashboard.offsetScale < 1 && dashboard.width > 0)
+        // R-custom: plan quicksettings-notif-merge task-8 — the dashboard's
+        // range is ALSO skipped when `name` is "launcher", so the launcher may
+        // open over an open dashboard (launcher wins). The dashboard's OWN
+        // gate (canOpenPanel("dashboard")) still sees the launcher's range via
+        // the `name !== "launcher"` branch above, so the dashboard stays
+        // blocked while the launcher is open — launcher keeps priority in BOTH
+        // directions.
+        if (name !== "dashboard" && name !== "launcher" && dashboard.offsetScale < 1 && dashboard.width > 0)
             out.push({x: dashboard.x, width: dashboard.width});
         if (includeNotifs && name !== "notifications" && notifications.height > 0 && notifications.width > 0)
             out.push({x: notifications.x, width: notifications.width});
