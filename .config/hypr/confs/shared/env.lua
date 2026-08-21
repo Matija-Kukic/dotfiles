@@ -14,7 +14,6 @@ hl.env("XCURSOR_THEME", "Qogir-cursors")
 hl.env("XCURSOR_SIZE", "24")
 hl.env("HYPRCURSOR_SIZE", "24")
 hl.env("QT_QPA_PLATFORM", "wayland")
-hl.env("GTK_THEME", "Catppuccin-Dark")
 hl.env("RUSTICL_ENABLE", "radeonsi")
 hl.env("HSA_OVERRIDE_GFX_VERSION", "10.3.0")
 

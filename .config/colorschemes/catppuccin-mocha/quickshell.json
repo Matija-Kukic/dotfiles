@@ -2,6 +2,7 @@
   "bg": "#1e1e2e",
   "surface": "#313244",
   "surfaceHigh": "#45475a",
+  "secondaryContainer": "#45475a",
   "fg": "#cdd6f4",
   "muted": "#6c7086",
   "accent": "#cba6f7",

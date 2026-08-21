@@ -5,6 +5,9 @@
 # Writes ~/.local/state/caelestia/scheme.json              (full M3 role set + term0-15)
 # Writes ~/.local/state/caelestia/wallpaper/path.txt       (resolved wallpaper path)
 #
+# Optional key: "secondaryContainer" (exact hex, e.g. an official palette tone)
+# overrides the derived secondaryContainer; absent = current derivation unchanged.
+#
 # scheme.json contract (from shell/services/Colours.qml load()):
 #   {name, flavour, mode, colours: {<role without m3 prefix>: "<hex WITHOUT #>", …}}
 # on* roles follow caelestia's own Colours.on(): same hue/sat, lightness 0.9 if the
@@ -51,10 +54,11 @@ def mix(a, b, t):  # RGB lerp, t=0 → a, t=1 → b
     return rgb2hex(*[A[i] + (B[i] - A[i]) * t for i in range(3)])
 
 
-def family(c, prefix, out):
+def family(c, prefix, out, container_override=None):
     """The 9 M3 roles of one color family, mirroring caelestia's default relations."""
     _, _, l = hsl(c)
-    container = with_l(c, max(0.18, min(0.35, l * 0.35)), 0.9)
+    container = (container_override.lstrip("#") if container_override
+                 else with_l(c, max(0.18, min(0.35, l * 0.35)), 0.9))
     out[f"{prefix}"] = c.lstrip("#")
     out[f"on{prefix.capitalize()}"] = on(c)
     out[f"{prefix}Container"] = container
@@ -74,6 +78,7 @@ def generate(scheme):
     fg, muted = q["fg"], q["muted"]
     accent, accent_alt = q["accent"], q["accentAlt"]
     error, warn = q["error"], q["warn"]
+    sc_override = q.get("secondaryContainer")
 
     c = {}
     # Neutrals: container ladder interpolated bg → surfaceHigh (caelestia's ladder
@@ -98,7 +103,7 @@ def generate(scheme):
 
     # Color families
     family(accent, "primary", c)
-    family(accent_alt, "secondary", c)
+    family(accent_alt, "secondary", c, container_override=sc_override)
     family(warn, "tertiary", c)
     family(error, "error", c)
 

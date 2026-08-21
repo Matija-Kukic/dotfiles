@@ -12,8 +12,8 @@ hl.on("hyprland.start", function()
     hl.exec_cmd("env CAELESTIA_WALLPAPERS_DIR=$HOME/dotfiles/wallpapers qs")
     hl.exec_cmd("odmori_oci")
 
-    hl.exec_cmd("dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP GTK_THEME")
-    hl.exec_cmd("systemctl --user import-environments WAYLAND_DISPLAY XDG_CURRENT_DESKTOP GTK_THEME")
+    hl.exec_cmd("dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP")
+    hl.exec_cmd("systemctl --user import-environments WAYLAND_DISPLAY XDG_CURRENT_DESKTOP")
     -- Start the systemd graphical session target so xdg-desktop-portal (and other
     -- Requisite=graphical-session.target services) can launch. The openSUSE hyprland
     -- package ships no session target, so we must pull it in manually.

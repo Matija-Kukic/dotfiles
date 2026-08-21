@@ -39,6 +39,8 @@ Singleton {
 
     property bool hadKeyboard
     property string lastSpecialWorkspace: ""
+    property bool kbToastArmed: false
+    property string lastToastedKbLayout: ""
 
     signal configReloaded
 
@@ -118,10 +120,28 @@ Singleton {
     }
 
     onKbLayoutFullChanged: {
-        if (hadKeyboard && GlobalConfig.utilities.toasts.kbLayoutChanged)
-            Toaster.toast(qsTr("Keyboard layout changed"), qsTr("Layout changed to: %1").arg(kbLayoutFull), "keyboard");
-
         hadKeyboard = !!keyboard;
+        kbToastDebounce.restart();
+    }
+
+    Timer {
+        id: kbToastDebounce
+
+        interval: 400
+        onTriggered: {
+            if (!root.keyboard || root.kbLayoutFull === "Unknown")
+                return;  // mid device-refresh — a later change restarts the timer
+
+            const prev = root.lastToastedKbLayout;
+            root.lastToastedKbLayout = root.kbLayoutFull;
+
+            if (!root.kbToastArmed) {
+                root.kbToastArmed = true;  // first stable value after shell start: record, don't toast
+                return;
+            }
+            if (GlobalConfig.utilities.toasts.kbLayoutChanged && root.kbLayoutFull !== prev)
+                Toaster.toast(qsTr("Keyboard layout changed"), qsTr("Layout changed to: %1").arg(root.kbLayoutFull), "keyboard");
+        }
     }
 
     Connections {

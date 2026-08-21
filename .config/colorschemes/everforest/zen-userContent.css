@@ -1,0 +1,142 @@
+/* Everforest Dark userContent.css*/
+
+@media (prefers-color-scheme: dark) {
+
+  /* Common variables affecting all pages */
+  @-moz-document url-prefix("about:") {
+    :root {
+      --in-content-page-color: #d3c6aa !important;
+      --color-accent-primary: #a7c080 !important;
+      --color-accent-primary-hover: rgb(169, 231, 221) !important;
+      --color-accent-primary-active: rgb(148, 219, 226) !important;
+      background-color: #272e33 !important;
+      --in-content-page-background: #272e33 !important;
+    }
+
+  }
+
+  /* Variables and styles specific to about:newtab and about:home */
+  @-moz-document url("about:newtab"), url("about:home") {
+
+    :root {
+      --newtab-background-color: #272e33 !important;
+      --newtab-background-color-secondary: #2e383c !important;
+      --newtab-element-hover-color: #2e383c !important;
+      --newtab-text-primary-color: #d3c6aa !important;
+      --newtab-wordmark-color: #d3c6aa !important;
+      --newtab-primary-action-background: #a7c080 !important;
+    }
+
+    .icon {
+      color: #a7c080 !important;
+    }
+
+    .card-outer:is(:hover, :focus, .active):not(.placeholder) .card-title {
+      color: #a7c080 !important;
+    }
+
+    .top-site-outer .search-topsite {
+      background-color: #7fbbb3 !important;
+    }
+
+    .compact-cards .card-outer .card-context .card-context-icon.icon-download {
+      fill: #a7c080 !important;
+    }
+  }
+
+  /* Variables and styles specific to about:preferences */
+  @-moz-document url-prefix("about:preferences") {
+    :root {
+      --zen-colors-tertiary: #1e2326 !important;
+      --in-content-text-color: #d3c6aa !important;
+      --link-color: #a7c080 !important;
+      --link-color-hover: rgb(169, 231, 221) !important;
+      --zen-colors-primary: #2e383c !important;
+      --in-content-box-background: #2e383c !important;
+      --zen-primary-color: #a7c080 !important;
+    }
+
+    groupbox , moz-card{
+      background: #272e33 !important;
+    }
+
+    button,
+    groupbox menulist {
+      background: #2e383c !important;
+      color: #d3c6aa !important;
+    }
+
+    .main-content {
+      background-color: #171c1f !important;
+    }
+
+    .identity-color-blue {
+      --identity-tab-color: #7fbbb3 !important;
+      --identity-icon-color: #7fbbb3 !important;
+    }
+
+    .identity-color-turquoise {
+      --identity-tab-color: #a7c080 !important;
+      --identity-icon-color: #a7c080 !important;
+    }
+
+    .identity-color-green {
+      --identity-tab-color: #a7c080 !important;
+      --identity-icon-color: #a7c080 !important;
+    }
+
+    .identity-color-yellow {
+      --identity-tab-color: #dbbc7f !important;
+      --identity-icon-color: #dbbc7f !important;
+    }
+
+    .identity-color-orange {
+      --identity-tab-color: #e69875 !important;
+      --identity-icon-color: #e69875 !important;
+    }
+
+    .identity-color-red {
+      --identity-tab-color: #e67e80 !important;
+      --identity-icon-color: #e67e80 !important;
+    }
+
+    .identity-color-pink {
+      --identity-tab-color: #d699b6 !important;
+      --identity-icon-color: #d699b6 !important;
+    }
+
+    .identity-color-purple {
+      --identity-tab-color: #d699b6 !important;
+      --identity-icon-color: #d699b6 !important;
+    }
+  }
+
+  /* Variables and styles specific to about:addons */
+  @-moz-document url-prefix("about:addons") {
+    :root {
+      --zen-dark-color-mix-base: #1e2326 !important;
+      --background-color-box: #272e33 !important;
+    }
+  }
+
+  /* Variables and styles specific to about:protections */
+  @-moz-document url-prefix("about:protections") {
+    :root {
+      --zen-primary-color: #272e33 !important;
+      --social-color: #d699b6 !important;
+      --coockie-color: #83c092 !important;
+      --fingerprinter-color: #dbbc7f !important;
+      --cryptominer-color: #7fbbb3 !important;
+      --tracker-color: #a7c080 !important;
+      --in-content-primary-button-background-hover: rgb(81, 83, 105) !important;
+      --in-content-primary-button-text-color-hover: #d3c6aa !important;
+      --in-content-primary-button-background: #374145 !important;
+      --in-content-primary-button-text-color: #d3c6aa !important;
+    }
+
+
+    .card {
+      background-color: #2e383c !important;
+    }
+  }
+}

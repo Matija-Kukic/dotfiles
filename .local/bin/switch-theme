@@ -53,5 +53,43 @@ if [[ -f "$ACTIVE/gtk-theme-name" ]] && command -v gsettings &>/dev/null; then
         "$(cat "$ACTIVE/gtk-theme-name")" 2>/dev/null || true
 fi
 
+# ── GTK settings.ini sync + gtk-4.0/libadwaita repoint (best-effort, never fatal) ──
+if [[ -f "$ACTIVE/gtk-theme-name" ]]; then
+    theme_name="$(cat "$ACTIVE/gtk-theme-name")" || true
+
+    # Keep both settings.ini in line with the active theme (tolerant of nwg-look rewrites).
+    for ini in "$HOME/.config/gtk-3.0/settings.ini" "$HOME/.config/gtk-4.0/settings.ini"; do
+        if [[ -f "$ini" ]]; then
+            if grep -qE '^\s*gtk-theme-name\s*=' "$ini"; then
+                sed -i -E "s/^\s*gtk-theme-name\s*=.*/gtk-theme-name=$theme_name/" "$ini" || true
+            elif grep -q '^\[Settings\]' "$ini"; then
+                sed -i "/^\[Settings\]/a gtk-theme-name=$theme_name" "$ini" || true
+            else
+                printf '\n[Settings]\ngtk-theme-name=%s\n' "$theme_name" >> "$ini" || true
+            fi
+        fi
+    done
+
+    # libadwaita reads ~/.config/gtk-4.0/{gtk.css,gtk-dark.css,assets}: repoint at the
+    # active theme's gtk-4.0 dir. NEVER remove existing symlinks — leaving them means
+    # the last-known-good theme stays active instead of regressing to Adwaita.
+    theme_dir=""
+    for base in "$HOME/.themes" "$HOME/.local/share/themes" "/usr/share/themes"; do
+        if [[ -d "$base/$theme_name/gtk-4.0" ]]; then
+            theme_dir="$base/$theme_name"
+            break
+        fi
+    done
+    if [[ -n "$theme_dir" ]]; then
+        for f in gtk.css gtk-dark.css assets; do
+            if [[ -e "$theme_dir/gtk-4.0/$f" ]]; then
+                ln -sfn "$theme_dir/gtk-4.0/$f" "$HOME/.config/gtk-4.0/$f" || true
+            fi
+        done
+    else
+        echo "note: '$theme_name' ships no gtk-4.0 — keeping existing gtk-4.0 symlinks" || true
+    fi
+fi
+
 notify-send "Theme" "Switched to $scheme" 2>/dev/null || true
-echo "Switched to $scheme (restart nvim / opencode / GTK apps to fully apply)"
+echo "Switched to $scheme (restart nvim / opencode / GTK apps / zen-browser to fully apply; re-login clears the old GTK_THEME env)"
