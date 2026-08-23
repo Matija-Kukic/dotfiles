@@ -6,7 +6,7 @@ import qs.components
 import qs.services
 import qs.utils
 
-// Horizontal active-window entry: app icon + elided title, crossfading.
+// In-flow active-window entry in the left group: app icon + elided title, crossfading.
 Item {
     id: root
 
@@ -27,13 +27,11 @@ Item {
         return title;
     }
 
-    readonly property int maxWidth: {
-        // Title is a centered overlay (see Bar.qml): measure the in-layout
-        // entries and cap hard so long titles stay compact
-        const entries = bar.layoutRow.children.filter(c => c.entryId && c.entryId !== "spacer");
-        const otherWidth = entries.reduce((acc, curr) => acc + (curr.item?.nonAnimWidth ?? curr.width ?? 0), 0);
-        return Math.min(bar.width - otherWidth - bar.layoutRow.spacing * (bar.layoutRow.children.length - 1) - bar.hPadding * 2, 360);
-    }
+    // The title is in-flow in the LEFT group since plan topbar-layout-refactor.
+    // This cap keeps long titles clear of the true-centered workspaces overlay;
+    // when space runs out, the title elides to nothing rather than overlapping.
+    // No artificial floor: overlap is worse than elision.
+    readonly property int maxWidth: Math.min(360, Math.max(0, bar.width / 2 - ((bar.wsOverlay?.item?.implicitWidth ?? 0) / 2) - mapToItem(bar, 0, 0).x - Tokens.spacing.large))
     property Title current: text1
 
     clip: true
@@ -84,10 +82,7 @@ Item {
         anchors.leftMargin: Tokens.spacing.small
         anchors.verticalCenter: parent.verticalCenter
 
-        // Track only the current title's width: the centred texts crossfade in
-        // place and the block re-centres instantly (no width animation), so the
-        // title never visibly slides to compensate for length changes. The old
-        // title may overflow during its fade-out — root clips it.
+        // The crossfade holder simply hugs the current title width in-flow.
         implicitWidth: root.current.implicitWidth
         implicitHeight: text1.implicitHeight
 

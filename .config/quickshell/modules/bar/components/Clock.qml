@@ -6,7 +6,7 @@ import Caelestia.Config
 import qs.components
 import qs.services
 
-// Horizontal clock: icon · HH:MM · | · date.
+// Horizontal clock: HH:MM · | · day DD/MM (icon config-gated).
 StyledRect {
     id: root
 
@@ -39,7 +39,7 @@ StyledRect {
 
         StyledText {
             text: `${Time.hourStr}:${Time.minuteStr}`
-            font: root.font.scale(1.1).build()
+            font: root.font.build()
             color: root.colour
             animate: true
         }
@@ -60,8 +60,8 @@ StyledRect {
                 }
 
                 StyledText {
-                    text: `${Time.format("ddd")} ${Time.format("d")}`
-                    font: Tokens.font.body.builders.small.scale(0.9).build()
+                    text: Time.format("ddd, dd/MM")
+                    font: Tokens.font.body.builders.small.build()
                     color: root.colour
                     animate: true
                 }

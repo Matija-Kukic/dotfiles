@@ -10,9 +10,11 @@ import Caelestia.Config
 import qs.components
 import qs.services
 
-// Horizontal topbar: entries laid out left→right in an inner RowLayout;
-// the ActiveWindow title is an overlay anchored to the true bar center
-// (side groups have unequal widths, so in-layout centering is off).
+// Horizontal topbar: entries render left→right in the RowLayout;
+// the WORKSPACES pill renders via a true-center overlay because the side
+// groups have unequal widths, so in-layout centering is off. This supersedes
+// the previous fix where the app title was the centered overlay; the title is
+// now a normal in-flow left entry and needs no dynamic recentering.
 Item {
     id: root
 
@@ -28,6 +30,7 @@ Item {
     property var panels
     readonly property int hPadding: Tokens.padding.large
     readonly property alias layoutRow: layoutRow
+    readonly property alias wsOverlay: wsOverlay
     implicitHeight: layoutRow.implicitHeight
 
     function closeTray(): void {
@@ -43,8 +46,8 @@ Item {
 
     // pos = x along the bar; returns the entry id at that position ("" if none)
     function entryIdAt(pos: real): string {
-        if (awOverlay.item && pos >= awOverlay.x && pos <= awOverlay.x + awOverlay.width)
-            return "activeWindow";
+        if (wsOverlay.item && pos >= wsOverlay.x && pos <= wsOverlay.x + wsOverlay.width)
+            return "workspaces";
         const ch = layoutRow.childAt(pos, height / 2) as EntryWrapper;
         return ch?.entryId ?? "";
     }
@@ -143,6 +146,9 @@ Item {
                 popouts.hasCurrent = false;
                 tray.expanded = true;
             }
+        // Reachable now that activeWindow is a real in-flow entry; the former
+        // zero-size placeholder made this branch dead. Live config
+        // popouts.activeWindow=false keeps it inert.
         } else if (id === "activeWindow") {
             if (Config.bar.popouts.activeWindow && Config.bar.activeWindow.showOnHover) {
                 // R-custom: geometric exclusion — same gate for activewindow popout.
@@ -165,7 +171,8 @@ Item {
     // pos = x along the bar
     function handleWheel(pos: real, angleDelta: point): void {
         const ch = layoutRow.childAt(pos, height / 2) as EntryWrapper;
-        if (ch?.entryId === "workspaces" && Config.bar.scrollActions.workspaces) {
+        const overWs = wsOverlay.item && pos >= wsOverlay.x && pos <= wsOverlay.x + wsOverlay.width;
+        if ((overWs || ch?.entryId === "workspaces") && Config.bar.scrollActions.workspaces) {
             // Workspace scroll
             const mon = (GlobalConfig.bar.workspaces.perMonitorWorkspaces ? Hypr.monitorFor(screen) : Hypr.focusedMonitor);
             const specialWs = mon?.lastIpcObject.specialWorkspace.name;
@@ -221,18 +228,18 @@ Item {
                 }
                 DelegateChoice {
                     roleValue: "workspaces"
-                    delegate: EntryWrapper {
-                        Workspaces {
-                            objectName: "taskbarWorkspaces"
-                            screen: root.screen
-                            fullscreen: root.fullscreen
-                        }
-                    }
+                    // Zero-size placeholder: the pill renders via the centered wsOverlay below
+                    delegate: Item {}
                 }
                 DelegateChoice {
-                    // Zero-size placeholder: the title renders via the centered awOverlay below
                     roleValue: "activeWindow"
-                    delegate: Item {}
+                    delegate: EntryWrapper {
+                        ActiveWindow {
+                            objectName: "taskbarActiveWindow"
+                            bar: root
+                            monitor: Brightness.getMonitorForScreen(root.screen)
+                        }
+                    }
                 }
                 DelegateChoice {
                     roleValue: "tray"
@@ -260,6 +267,15 @@ Item {
                     }
                 }
                 DelegateChoice {
+                    roleValue: "infoIcons"
+                    delegate: EntryWrapper {
+                        Layout.leftMargin: Tokens.spacing.medium
+                        InfoIcons {
+                            objectName: "taskbarInfoIcons"
+                        }
+                    }
+                }
+                DelegateChoice {
                     roleValue: "power"
                     delegate: EntryWrapper {
                         Power {
@@ -272,19 +288,19 @@ Item {
         }
     }
 
-    // True-center ActiveWindow title overlay (not affected by unequal side groups)
+    // True-center Workspaces overlay (not affected by unequal side groups)
     Loader {
-        id: awOverlay
+        id: wsOverlay
 
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.verticalCenter: parent.verticalCenter
 
-        active: root.Config.bar.entries.values.some(e => e.id === "activeWindow" && e.enabled)
+        active: root.Config.bar.entries.values.some(e => e.id === "workspaces" && e.enabled)
 
-        sourceComponent: ActiveWindow {
-            objectName: "taskbarActiveWindow"
-            bar: root
-            monitor: Brightness.getMonitorForScreen(root.screen)
+        sourceComponent: Workspaces {
+            objectName: "taskbarWorkspaces"
+            screen: root.screen
+            fullscreen: root.fullscreen
         }
     }
 

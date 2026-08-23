@@ -24,10 +24,16 @@ CustomMouseArea {
     property bool osdShortcutActive
     property bool utilitiesShortcutActive
 
-    // True when hovering the ActiveWindow title in the bar while its small
-    // window-info popout is disabled — treated as a dashboard-hover then.
-    function overActiveWindowTitle(x: real, y: real): bool {
-        return !Config.bar.popouts.activeWindow && y < bar.implicitHeight && bar.entryIdAt(x) === "activeWindow";
+    // True when hovering the dashboard trigger zones in the bar — the dead
+    // zones flanking the centered workspaces pill (the two spacer entries)
+    // and the pill itself (the middle) — while the small window-info popout
+    // is disabled. Treated as a dashboard-hover then; tray, clock,
+    // statusIcons, logo, infoIcons and power remain non-triggers.
+    function overDashboardBarTrigger(x: real, y: real): bool {
+        if (Config.bar.popouts.activeWindow || y >= bar.implicitHeight)
+            return false;
+        const entryId = bar.entryIdAt(x);
+        return entryId === "spacer" || entryId === "workspaces";
     }
 
     function withinPanelHeight(panel: Item, x: real, y: real): bool {
@@ -249,9 +255,9 @@ CustomMouseArea {
                 screenState.launcher = false;
         }
 
-        // Show dashboard on hover (also when hovering the ActiveWindow title in the
-        // bar if the small window-info popout is disabled)
-        const showDashboard = (Config.dashboard.showOnHover && inTopPanel(panels.dashboard, x, y)) || overActiveWindowTitle(x, y);
+        // Show dashboard on hover: panel top zone, or the bar's dashboard
+        // trigger (spacer dead zones + centered workspaces pill — see overDashboardBarTrigger)
+        const showDashboard = (Config.dashboard.showOnHover && inTopPanel(panels.dashboard, x, y)) || overDashboardBarTrigger(x, y);
 
         // Always update visibility based on hover if not in shortcut mode
         if (!dashboardShortcutActive) {
@@ -316,7 +322,7 @@ CustomMouseArea {
                 root.utilitiesShortcutActive = false;
 
                 // Also hide dashboard and OSD if they're not being hovered
-                const inDashboardArea = root.inTopPanel(root.panels.dashboard, root.mouseX, root.mouseY) || root.overActiveWindowTitle(root.mouseX, root.mouseY);
+                const inDashboardArea = root.inTopPanel(root.panels.dashboard, root.mouseX, root.mouseY) || root.overDashboardBarTrigger(root.mouseX, root.mouseY);
                 const inOsdArea = root.inRightPanel(root.panels.osdWrapper, root.mouseX, root.mouseY);
 
                 if (!inDashboardArea) {
@@ -352,7 +358,7 @@ CustomMouseArea {
         function onDashboardChanged() {
             if (root.screenState.dashboard) {
                 // Dashboard became visible, immediately check if this should be shortcut mode
-                const inDashboardArea = root.inTopPanel(root.panels.dashboard, root.mouseX, root.mouseY) || root.overActiveWindowTitle(root.mouseX, root.mouseY);
+                const inDashboardArea = root.inTopPanel(root.panels.dashboard, root.mouseX, root.mouseY) || root.overDashboardBarTrigger(root.mouseX, root.mouseY);
                 if (!inDashboardArea) {
                     root.dashboardShortcutActive = true;
                 }
