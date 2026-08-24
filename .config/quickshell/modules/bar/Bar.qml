@@ -201,6 +201,7 @@ Item {
 
         anchors.fill: parent
         spacing: Tokens.spacing.medium
+        visible: !ZenMode.enabled
 
         Repeater {
             id: repeater
@@ -295,12 +296,24 @@ Item {
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.verticalCenter: parent.verticalCenter
 
-        active: root.Config.bar.entries.values.some(e => e.id === "workspaces" && e.enabled)
+        active: root.Config.bar.entries.values.some(e => e.id === "workspaces" && e.enabled) && !ZenMode.enabled
 
         sourceComponent: Workspaces {
             objectName: "taskbarWorkspaces"
             screen: root.screen
             fullscreen: root.fullscreen
+        }
+    }
+
+    Loader {
+        id: zenLoader
+
+        anchors.fill: parent
+        active: ZenMode.enabled
+
+        sourceComponent: ZenBar {
+            screen: root.screen
+            screenState: root.screenState
         }
     }
 

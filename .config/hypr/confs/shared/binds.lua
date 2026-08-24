@@ -13,8 +13,10 @@ hl.bind(mainMod .. " + W", hl.dsp.window.close())
 hl.bind(mainMod .. " + E", hl.dsp.exec_cmd(P.fileManager))
 -- R4: caelestia launcher (was: exec, $menu = rofi drun)
 hl.bind(mainMod .. " + R", hl.dsp.global("caelestia:launcher"))
--- rofi run kept: caelestia launcher has no shell-run mode
-hl.bind(mainMod .. " + S", hl.dsp.exec_cmd(P.runMenu))
+-- Run menu: caelestia launcher opened in > commands mode
+hl.bind(mainMod .. " + S", hl.dsp.global("caelestia:runmenu"))
+-- Zen mode toggle
+hl.bind(mainMod .. " + Z", hl.dsp.global("caelestia:zenmode"))
 hl.bind(mainMod .. " + T", hl.dsp.group.toggle())
 hl.bind(mainMod .. " + D", hl.dsp.exec_cmd(P.browser))
 

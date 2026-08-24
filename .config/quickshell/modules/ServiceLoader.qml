@@ -8,7 +8,7 @@ Scope {
         // Force certain singletons to load on shell init instead of lazily
 
         IdleInhibitor;
-        GameMode;
+        ZenMode;
         Notifs;
         Players;
         Brightness;

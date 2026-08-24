@@ -26,7 +26,8 @@ yourself in the config part of the nvim folder, guide is [here](https://github.c
 | Super + Return | Launch kitty terminal |
 | Super + E | Open nemo file manager |
 | Super + R | Open caelestia launcher drawer |
-| Super + S | Open rofi run dialog |
+| Super + S | Open run commands menu (launcher `>` mode) |
+| Super + Z | Toggle zen mode |
 | Super + D | Launch zen-browser |
 
 ### System

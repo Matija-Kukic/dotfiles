@@ -4,6 +4,7 @@ import QtQuick
 import Caelestia
 import Caelestia.Config
 import qs.components
+import qs.services
 
 Item {
     id: root
@@ -11,7 +12,9 @@ Item {
     required property ScreenState screenState
     readonly property Props props: Props {}
 
-    readonly property bool shouldBeActive: screenState.sidebar && Config.sidebar.enabled
+    // R-custom: zen-mode lockdown (plan zen-mode task-6) — the sidebar cannot
+    // render while zen is on, whatever the state flag says.
+    readonly property bool shouldBeActive: !ZenMode.enabled && screenState.sidebar && Config.sidebar.enabled
     property real offsetScale: shouldBeActive ? 0 : 1
 
     visible: offsetScale < 1

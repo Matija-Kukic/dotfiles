@@ -9,8 +9,18 @@ import qs.services
 Singleton {
     property ShellRoot shellRoot
 
+    property string launcherPendingText: ""
+
     function anySidebarOpen(): bool {
         return states.instances.some(s => s.sidebar);
+    }
+
+    function closeZenBlockedPanels(): void {
+        for (const s of states.instances) {
+            s.dashboard = false;
+            s.utilities = false;
+            s.sidebar = false;
+        }
     }
 
     function forScreen(screen: ShellScreen): ScreenState {

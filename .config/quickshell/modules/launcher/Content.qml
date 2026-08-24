@@ -18,6 +18,14 @@ Item {
     readonly property int padding: Tokens.padding.large
     readonly property int rounding: Tokens.rounding.extraLarge
 
+    function applyPendingText(): void {
+        const p = ShellState.launcherPendingText;
+        if (p.length > 0) {
+            search.text = p;
+            ShellState.launcherPendingText = "";
+        }
+    }
+
     implicitWidth: listWrapper.width + padding * 2
     implicitHeight: search.height + listWrapper.height + padding + search.anchors.bottomMargin
 
@@ -69,7 +77,7 @@ Item {
                     Wallpapers.setWallpaper(currentItem.modelData.path);
                     root.screenState.launcher = false;
                 } else if (text.startsWith(GlobalConfig.launcher.actionPrefix)) {
-                    if (text.startsWith(`${GlobalConfig.launcher.actionPrefix}calc `))
+                    if (text.startsWith(`${GlobalConfig.launcher.actionPrefix}calc `) || text.startsWith(`${GlobalConfig.launcher.actionPrefix}run `))
                         currentItem.onClicked();
                     else
                         currentItem.modelData.onClicked(list.currentList);
@@ -106,12 +114,17 @@ Item {
             }
         }
 
-        Component.onCompleted: forceActiveFocus()
+        Component.onCompleted: {
+            root.applyPendingText();
+            forceActiveFocus();
+        }
 
         Connections {
             function onLauncherChanged(): void {
                 if (!root.screenState.launcher)
                     search.text = "";
+                else
+                    root.applyPendingText();
             }
 
             function onSessionChanged(): void {
@@ -120,6 +133,15 @@ Item {
             }
 
             target: root.screenState
+        }
+
+        Connections {
+            function onLauncherPendingTextChanged(): void {
+                if (root.screenState.launcher)
+                    root.applyPendingText();
+            }
+
+            target: ShellState
         }
     }
 }

@@ -20,29 +20,35 @@ Singleton {
             "general:gaps_in": 0,
             "general:gaps_out": 0,
             "general:border_size": 1,
-            "decoration:rounding": 0,
-            "general:allow_tearing": 1
+            "decoration:rounding": 0
         });
+    }
+
+    function setLowPower(on: bool): void {
+        Quickshell.execDetached(["sudo", "-n", "/usr/sbin/tlp", on ? "bat" : "auto"]);
     }
 
     onEnabledChanged: {
         if (enabled) {
             setDynamicConfs();
+            setLowPower(true);
+            ShellState.closeZenBlockedPanels();
             if (GlobalConfig.utilities.toasts.gameModeChanged)
-                Toaster.toast(qsTr("Game mode enabled"), qsTr("Disabled Hyprland animations, blur, gaps and shadows"), "gamepad");
+                Toaster.toast(qsTr("Zen mode enabled"), qsTr("Low power on, panels locked down"), "self_improvement");
         } else {
+            setLowPower(false);
             Hypr.extras.message("reload");
             if (GlobalConfig.utilities.toasts.gameModeChanged)
-                Toaster.toast(qsTr("Game mode disabled"), qsTr("Hyprland settings restored"), "gamepad");
+                Toaster.toast(qsTr("Zen mode disabled"), qsTr("Power and Hyprland settings restored"), "self_improvement");
         }
     }
 
     PersistentProperties {
         id: props
 
-        property bool enabled: Hypr.options["animations:enabled"] === 0 // qmllint disable missing-property
+        property bool enabled: false
 
-        reloadableId: "gameMode"
+        reloadableId: "zenMode"
     }
 
     Connections {
@@ -71,6 +77,6 @@ Singleton {
             props.enabled = false;
         }
 
-        target: "gameMode"
+        target: "zenMode"
     }
 }

@@ -2,6 +2,7 @@ import QtQuick
 import Quickshell
 import Quickshell.Io
 import Caelestia
+import Caelestia.Config
 import qs.components.misc
 import qs.services
 import qs.modules.nexus
@@ -28,6 +29,14 @@ Scope {
         onPressed: {
             if (root.hasFullscreen)
                 return;
+            // R-custom: zen-mode lockdown (plan zen-mode task-6) — in zen,
+            // showall toggles ONLY launcher + osd (dashboard/utilities are
+            // blocked panels and stay shut).
+            if (ZenMode.enabled) {
+                const v = ShellState.forActive();
+                v.launcher = v.osd = !(v.launcher || v.osd);
+                return;
+            }
             const v = ShellState.forActive();
             v.launcher = v.dashboard = v.osd = v.utilities = !(v.launcher || v.dashboard || v.osd || v.utilities);
         }
@@ -40,6 +49,8 @@ Scope {
         description: "Toggle dashboard"
         onPressed: {
             if (root.hasFullscreen)
+                return;
+            if (ZenMode.enabled)
                 return;
             const screenState = ShellState.forActive();
             // R-custom: geometric exclusion (plan fix-visual-defects
@@ -96,6 +107,31 @@ Scope {
     // qmllint disable unresolved-type
     CustomShortcut {
         // qmllint enable unresolved-type
+        name: "runmenu"
+        description: "Open launcher in commands mode"
+        onPressed: {
+            if (root.hasFullscreen)
+                return;
+            const screenState = ShellState.forActive();
+            const panels = ShellState.componentsForActive()?.panels ?? null;
+            if (!screenState.launcher && panels && !panels.canOpenPanel("launcher"))
+                return;
+            ShellState.launcherPendingText = GlobalConfig.launcher.actionPrefix;
+            screenState.launcher = true;
+        }
+    }
+
+    // qmllint disable unresolved-type
+    CustomShortcut {
+        // qmllint enable unresolved-type
+        name: "zenmode"
+        description: "Toggle zen mode"
+        onPressed: ZenMode.enabled = !ZenMode.enabled
+    }
+
+    // qmllint disable unresolved-type
+    CustomShortcut {
+        // qmllint enable unresolved-type
         name: "launcherInterrupt"
         description: "Interrupt launcher keybind"
         onPressed: root.launcherInterrupted = true
@@ -109,6 +145,8 @@ Scope {
         onPressed: {
             if (root.hasFullscreen)
                 return;
+            if (ZenMode.enabled)
+                return;
             const screenState = ShellState.forActive();
             screenState.sidebar = !screenState.sidebar;
         }
@@ -121,6 +159,8 @@ Scope {
         description: "Toggle utilities"
         onPressed: {
             if (root.hasFullscreen)
+                return;
+            if (ZenMode.enabled)
                 return;
             const screenState = ShellState.forActive();
             // R-custom: plan quicksettings-notif-merge task-3 — launcher HARD
@@ -136,6 +176,10 @@ Scope {
 
     IpcHandler {
         function toggle(drawer: string): void {
+            // R-custom: zen-mode lockdown (plan zen-mode task-6) — IPC toggles
+            // for the blocked panels are ignored while zen is on.
+            if (ZenMode.enabled && ["dashboard", "utilities", "sidebar"].includes(drawer))
+                return;
             if (list().split("\n").includes(drawer)) {
                 if (root.hasFullscreen && ["launcher", "session", "dashboard"].includes(drawer))
                     return;

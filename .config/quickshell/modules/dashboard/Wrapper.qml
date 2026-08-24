@@ -6,6 +6,7 @@ import Caelestia
 import Caelestia.Config
 import qs.components
 import qs.components.filedialog
+import qs.services
 import qs.utils
 
 Item {
@@ -25,7 +26,9 @@ Item {
     }
 
     readonly property real nonAnimHeight: (content.item as Content)?.nonAnimHeight ?? 0
-    readonly property bool shouldBeActive: screenState.dashboard && Config.dashboard.enabled
+    // R-custom: zen-mode lockdown (plan zen-mode task-6) — the dashboard
+    // cannot render while zen is on, whatever the state flag says.
+    readonly property bool shouldBeActive: !ZenMode.enabled && screenState.dashboard && Config.dashboard.enabled
     property real offsetScale: shouldBeActive ? 0 : 1
 
     visible: offsetScale < 1

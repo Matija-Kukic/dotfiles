@@ -174,7 +174,9 @@ CustomMouseArea {
             if (Config.sidebar.showOnHover) {
                 const sidebarTriggerY = Math.max(Config.sidebar.minHoverThreshold, panels.notifications.y + panels.notifications.height + bar.implicitHeight);
                 const showSidebarHover = x > Math.min(width - Config.border.minThickness, root.borderThickness + panels.sidebar.x) && y <= sidebarTriggerY;
-                if (showSidebarHover && !screenState.sidebar)
+                // R-custom: zen-mode lockdown (plan zen-mode task-6) — hover
+                // may not open the sidebar in zen (open direction gated only).
+                if (showSidebarHover && !screenState.sidebar && !ZenMode.enabled)
                     screenState.sidebar = true;
             }
 
@@ -189,9 +191,9 @@ CustomMouseArea {
                     screenState.session = false;
 
                 // Show sidebar on drag if in session area and session is nearly fully visible
-                if (showSidebar && panels.session.offsetScale <= 0 && dragX < -Config.sidebar.dragThreshold)
+                if (showSidebar && !ZenMode.enabled && panels.session.offsetScale <= 0 && dragX < -Config.sidebar.dragThreshold)
                     screenState.sidebar = true;
-            } else if (showSidebar && dragX < -Config.sidebar.dragThreshold) {
+            } else if (showSidebar && !ZenMode.enabled && dragX < -Config.sidebar.dragThreshold) {
                 // Show sidebar on drag if not in session area
                 screenState.sidebar = true;
             }
@@ -224,7 +226,9 @@ CustomMouseArea {
             if (Config.sidebar.showOnHover && !pressed) {
                 const sidebarTriggerY = Math.max(Config.sidebar.minHoverThreshold, panels.notifications.y + panels.notifications.height + bar.implicitHeight);
                 const showSidebarHover = x > Math.min(width - Config.border.minThickness, root.borderThickness + panels.sidebar.x) && y <= sidebarTriggerY;
-                if (showSidebarHover && !screenState.sidebar) {
+                // R-custom: zen-mode lockdown (plan zen-mode task-6) — hover
+                // may not open the sidebar in zen; the close branch stays free.
+                if (showSidebarHover && !screenState.sidebar && !ZenMode.enabled) {
                     screenState.sidebar = true;
                 } else {
                     const inSidebarArea = inRightPanel(panels.sidebar, x, y) || inTopPanel(panels.sessionWrapper, x, y);
@@ -268,7 +272,10 @@ CustomMouseArea {
             // checkPopout already refuses popouts there; the dashboard here is
             // an explicit user gesture so it's safe to gate consistently.
             if (showDashboard && !screenState.dashboard
-                    && !panels.canOpenPanel("dashboard") && panels.dashboard.width > 0) {
+                    && (ZenMode.enabled || (!panels.canOpenPanel("dashboard") && panels.dashboard.width > 0))) {
+                // R-custom: zen-mode lockdown (plan zen-mode task-6) — in zen
+                // the hover open is blocked like a geometric exclusion; the
+                // close (`= false`) stays free.
                 // Blocked: keep dashboard closed.
             } else {
                 screenState.dashboard = showDashboard;
@@ -282,7 +289,10 @@ CustomMouseArea {
         if (pressed && inTopPanel(panels.dashboard, dragStart.x, dragStart.y) && withinPanelWidth(panels.dashboard, x, y)) {
             if (dragY > Config.dashboard.dragThreshold) {
                 // R-custom: geometric exclusion — drag-to-open also gated.
-                if (!screenState.dashboard && (panels.canOpenPanel("dashboard") || !panels.dashboard.width))
+                // R-custom: zen-mode lockdown (plan zen-mode task-6) — drag
+                // may not set the dashboard flag in zen either (an un-gated
+                // flag write would pop the panel open when zen exits).
+                if (!screenState.dashboard && !ZenMode.enabled && (panels.canOpenPanel("dashboard") || !panels.dashboard.width))
                     screenState.dashboard = true;
             } else if (dragY < -Config.dashboard.dragThreshold)
                 screenState.dashboard = false;
@@ -297,7 +307,9 @@ CustomMouseArea {
             // block, OPEN-direction only: hover may CLOSE utilities anytime
             // (showUtilities false → false), but may only OPEN it while the
             // launcher is closed.
-            screenState.utilities = showUtilities && (screenState.utilities || panels.launcher.offsetScale >= 1);
+            // R-custom: zen-mode lockdown (plan zen-mode task-6) — zen also
+            // blocks the hover open; the close stays free.
+            screenState.utilities = showUtilities && (screenState.utilities || (panels.launcher.offsetScale >= 1 && !ZenMode.enabled));
         } else if (showUtilities) {
             // If hovering over utilities area while in shortcut mode, transition to hover control
             utilitiesShortcutActive = false;

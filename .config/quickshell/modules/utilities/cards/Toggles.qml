@@ -125,9 +125,9 @@ StyledRect {
                 DelegateChoice {
                     roleValue: "gameMode"
                     delegate: Toggle {
-                        icon: "gamepad"
-                        checked: GameMode.enabled
-                        onClicked: GameMode.enabled = !GameMode.enabled
+                        icon: "self_improvement"
+                        checked: ZenMode.enabled
+                        onClicked: ZenMode.enabled = !ZenMode.enabled
                     }
                 }
                 DelegateChoice {
