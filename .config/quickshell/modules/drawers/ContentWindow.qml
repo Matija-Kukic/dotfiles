@@ -151,7 +151,11 @@ StyledWindow {
         opacity: root.surfaceColour.a
         layer.enabled: true
         layer.effect: MultiEffect {
-            shadowEnabled: true
+            // Perf: skip the full-screen shadow blur passes when the shadow is
+            // fully transparent (fullscreen transition drives shadowOpacity to 0).
+            // Pixel-identical: alpha-0 shadow renders nothing. During the
+            // transition shadowOpacity > 0 keeps it enabled, so nothing pops.
+            shadowEnabled: root.shadowOpacity > 0
             blurMax: 15
             shadowColor: Qt.alpha(Colours.palette.m3shadow, Math.max(0, root.shadowOpacity))
         }

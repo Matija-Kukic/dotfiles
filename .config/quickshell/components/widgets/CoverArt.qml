@@ -35,7 +35,7 @@ Item {
         id: shapeWrapper
 
         anchors.fill: parent
-        layer.enabled: true
+        layer.enabled: image.status === Image.Ready || image.opacity > 0
         opacity: root.fallbackColour.a
 
         MaterialShape {
@@ -99,7 +99,7 @@ Item {
 
         source: Players.getArtUrl(Players.active)
 
-        layer.enabled: true
+        layer.enabled: image.status === Image.Ready || image.opacity > 0
         layer.effect: Mask {
             maskSource: shapeWrapper
         }

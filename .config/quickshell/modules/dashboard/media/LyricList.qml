@@ -27,7 +27,7 @@ Item {
     property bool flag
     property list<string> lyricList: Lyrics.lyrics
 
-    layer.enabled: true
+    layer.enabled: lyrics.opacity > 0
     layer.effect: Mask {
         maskSource: mask
 

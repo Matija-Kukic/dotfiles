@@ -30,14 +30,29 @@ Item {
     anchors.right: parent.right
 
     implicitWidth: Tokens.sizes.notifs.width
-    implicitHeight: {
+    // R-custom: perf — hoist the per-item height sum into its own binding so
+    // clamping-only invalidations (osdPanel.y, screen height, utilities panel
+    // height) don't re-run the O(n) itemAtIndex loop. rawHeight re-evaluates
+    // only when list.count or a delegate's nonAnimHeight changes; implicitHeight
+    // reads the cached value. Values are identical: rawHeight computes the exact
+    // same sum as the inlined loop did, and the clamping logic below is unchanged.
+    readonly property real rawHeight: {
         const count = list.count;
         if (count === 0)
             return 0;
-
-        let height = (count - 1) * Tokens.spacing.medium;
+        let h = (count - 1) * Tokens.spacing.medium;
         for (let i = 0; i < count; i++)
-            height += (list.itemAtIndex(i) as NotifWrapper)?.nonAnimHeight ?? 0;
+            h += (list.itemAtIndex(i) as NotifWrapper)?.nonAnimHeight ?? 0;
+        return h;
+    }
+
+    implicitHeight: {
+        if (list.count === 0)
+            return 0;
+
+        let height = root.rawHeight;
+        const win = QsWindow.window as QsWindow;
+        const border = Config.border.thickness;
 
         if (screenState.osd) {
             const h = osdPanel.y - clampedPadding;
@@ -55,12 +70,12 @@ Item {
         // below still bounds total growth.
 
         if (screenState.utilities) {
-            const h = ((QsWindow.window as QsWindow)?.screen.height ?? 0) - (utilitiesPanel as Utilities.Wrapper).nonAnimHeight - Config.border.thickness * 2 - padding * 2 - Tokens.spacing.extraLarge;
+            const h = (win?.screen.height ?? 0) - (utilitiesPanel as Utilities.Wrapper).nonAnimHeight - border * 2 - padding * 2 - Tokens.spacing.extraLarge;
             if (height > h)
                 height = h;
         }
 
-        return Math.min(((QsWindow.window as QsWindow)?.screen?.height ?? 0) + padding - clampedPadding * 2 - Config.border.thickness, height + padding + clampedPadding);
+        return Math.min((win?.screen?.height ?? 0) + padding - clampedPadding * 2 - border, height + padding + clampedPadding);
     }
 
     ClippingWrapperRectangle {
@@ -119,12 +134,13 @@ Item {
                         return 0;
 
                     const scrollY = list.contentY;
+                    const spacing = Tokens.spacing.medium;
 
                     let height = 0;
                     for (let i = 0; i < count; i++) {
-                        height += ((list.itemAtIndex(i) as NotifWrapper)?.nonAnimHeight ?? 0) + Tokens.spacing.medium;
+                        height += ((list.itemAtIndex(i) as NotifWrapper)?.nonAnimHeight ?? 0) + spacing;
 
-                        if (height - Tokens.spacing.medium >= scrollY)
+                        if (height - spacing >= scrollY)
                             return i;
                     }
 
@@ -140,12 +156,13 @@ Item {
                         return 0;
 
                     const scrollY = list.contentHeight - (list.contentY + list.height);
+                    const spacing = Tokens.spacing.medium;
 
                     let height = 0;
                     for (let i = count - 1; i >= 0; i--) {
-                        height += ((list.itemAtIndex(i) as NotifWrapper)?.nonAnimHeight ?? 0) + Tokens.spacing.medium;
+                        height += ((list.itemAtIndex(i) as NotifWrapper)?.nonAnimHeight ?? 0) + spacing;
 
-                        if (height - Tokens.spacing.medium >= scrollY)
+                        if (height - spacing >= scrollY)
                             return count - i - 1;
                     }
 

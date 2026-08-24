@@ -3,6 +3,8 @@ import Caelestia.Config
 import qs.services
 
 StyledText {
+    renderType: Text.CurveRendering
+
     property real fill
     property int grade: Colours.light ? 0 : -25
     property font fontStyle: Tokens.font.icon.small
