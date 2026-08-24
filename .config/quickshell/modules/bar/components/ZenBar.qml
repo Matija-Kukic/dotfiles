@@ -62,53 +62,6 @@ Item {
             Layout.fillWidth: true
         }
 
-        StyledClippingRect {
-            id: workspacePill
-
-            Layout.alignment: Qt.AlignVCenter
-
-            implicitWidth: dots.implicitWidth + Tokens.padding.small
-            implicitHeight: 18
-
-            color: Colours.tPalette.m3surfaceContainer
-            radius: Tokens.rounding.full
-
-            Row {
-                id: dots
-
-                anchors.centerIn: parent
-                spacing: Tokens.spacing.small
-
-                Repeater {
-                    model: Config.bar.workspaces.shown
-
-                    delegate: StyledRect {
-                        id: dot
-
-                        required property int index
-                        readonly property int ws: root.groupOffset + index + 1
-
-                        implicitWidth: 8
-                        implicitHeight: 8
-                        radius: 4
-                        color: dot.ws === root.activeWsId ? Colours.palette.m3primary : root.occupied[dot.ws] ? Colours.palette.m3onSurfaceVariant : Colours.palette.m3outlineVariant
-
-                        MouseArea {
-                            anchors.fill: parent
-
-                            onClicked: {
-                                const ws = dot.ws;
-                                if (Hypr.activeWsId !== ws)
-                                    Hypr.dispatch(Hypr.usingLua ? `hl.dsp.focus({ workspace = "${ws}" })` : `workspace ${ws}`);
-                                else
-                                    Hypr.dispatch(Hypr.usingLua ? 'hl.dsp.workspace.toggle_special("special")' : "togglespecialworkspace special");
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
         Item {
             Layout.fillWidth: true
         }
@@ -173,6 +126,54 @@ Item {
                 text: "close"
                 color: Colours.palette.m3onSurfaceVariant
                 fontStyle: Tokens.font.icon.builders.small.weight(Font.Bold).build()
+            }
+        }
+    }
+
+    StyledClippingRect {
+        id: workspacePill
+
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.verticalCenter: parent.verticalCenter
+
+        implicitWidth: dots.implicitWidth + Tokens.padding.small
+        implicitHeight: 18
+
+        color: Colours.tPalette.m3surfaceContainer
+        radius: Tokens.rounding.full
+
+        Row {
+            id: dots
+
+            anchors.centerIn: parent
+            spacing: Tokens.spacing.small
+
+            Repeater {
+                model: Config.bar.workspaces.shown
+
+                delegate: StyledRect {
+                    id: dot
+
+                    required property int index
+                    readonly property int ws: root.groupOffset + index + 1
+
+                    implicitWidth: 8
+                    implicitHeight: 8
+                    radius: 4
+                    color: dot.ws === root.activeWsId ? Colours.palette.m3primary : root.occupied[dot.ws] ? Colours.palette.m3onSurfaceVariant : Colours.palette.m3outlineVariant
+
+                    MouseArea {
+                        anchors.fill: parent
+
+                        onClicked: {
+                            const ws = dot.ws;
+                            if (Hypr.activeWsId !== ws)
+                                Hypr.dispatch(Hypr.usingLua ? `hl.dsp.focus({ workspace = "${ws}" })` : `workspace ${ws}`);
+                            else
+                                Hypr.dispatch(Hypr.usingLua ? 'hl.dsp.workspace.toggle_special("special")' : "togglespecialworkspace special");
+                        }
+                    }
+                }
             }
         }
     }
