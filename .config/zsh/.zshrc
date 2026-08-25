@@ -152,12 +152,12 @@ if [[ -o interactive && -z ${TMUX-} ]] && (( $+commands[fastfetch] )); then
 fi
 
 # ── Prompt ─────────────────────────────────────────────────────
-# Keep prompt initialization near the end of the file.
+# Prompt follows the active colorscheme selected by switch-theme.
 
 if (( $+commands[oh-my-posh] )); then
     eval "$(
         oh-my-posh init zsh \
-            --config "$XDG_CONFIG_HOME/ohmyposh/my-omp.toml"
+            --config "$XDG_CONFIG_HOME/colorschemes/active/omp.toml"
     )"
 fi
 
