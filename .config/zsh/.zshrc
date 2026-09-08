@@ -168,3 +168,6 @@ export PATH=/home/matijak/.opencode/bin:$PATH
 
 # bun completions
 [ -s "/home/matijak/.bun/_bun" ] && source "/home/matijak/.bun/_bun"
+
+# Pi
+export PATH="$HOME/.local/bin:$PATH"

@@ -14,6 +14,11 @@ final_space = true
   venv = '#ead49a'
   ok = '#64e880'
   err = '#ed8695'
+  node = '#a4dc99'
+  golang = '#82d5e6'
+  rust = '#ed8695'
+  docker = '#a0d2fa'
+  cmake = '#f1c5c4'
 
 [transient_prompt]
   template = ' ❯ '
@@ -52,7 +57,7 @@ final_space = true
   [[blocks.segments]]
     type = 'git'
     style = 'plain'
-    template = '<p:bracket>-[</><p:git> {{ .HEAD }}{{ if .BranchStatus }} {{ .BranchStatus }}{{ end }}{{ if .Working.Changed }}  {{ .Working.String }}{{ end }}{{ if .Staging.Changed }}  {{ .Staging.String }}{{ end }} </><p:bracket>]</>'
+    template = '<p:bracket>-[</><p:git>{{ .HEAD }}{{ if .BranchStatus }} {{ .BranchStatus }}{{ end }}{{ if .Working.Changed }}   {{ .Working.String }}{{ end }}{{ if .Staging.Changed }}   {{ .Staging.String }}{{ end }}</><p:bracket>]</>'
 
     [blocks.segments.properties]
       cache_duration = 'none'
@@ -63,13 +68,62 @@ final_space = true
   [[blocks.segments]]
     type = 'python'
     style = 'plain'
-    template = '<p:bracket>-[</><p:venv> {{ .Venv }} </><p:bracket>]</>'
+    template = '<p:bracket>-[</><p:venv> {{ .Venv }}</><p:bracket>]</>'
 
     [blocks.segments.properties]
       cache_duration = 'none'
       display_mode = 'context'
       fetch_version = false
       fetch_virtual_env = true
+
+  [[blocks.segments]]
+    type = 'node'
+    style = 'plain'
+    template = '<p:bracket>-[</><p:node> {{ .Full }}</><p:bracket>]</>'
+
+    [blocks.segments.properties]
+      cache_duration = 'none'
+      display_mode = 'context'
+      fetch_package_manager = false
+      home_enabled = false
+
+  [[blocks.segments]]
+    type = 'go'
+    style = 'plain'
+    template = '<p:bracket>-[</><p:golang> {{ .Full }}</><p:bracket>]</>'
+
+    [blocks.segments.properties]
+      cache_duration = 'none'
+      display_mode = 'context'
+      home_enabled = false
+
+  [[blocks.segments]]
+    type = 'rust'
+    style = 'plain'
+    template = '<p:bracket>-[</><p:rust> {{ .Full }}</><p:bracket>]</>'
+
+    [blocks.segments.properties]
+      cache_duration = 'none'
+      display_mode = 'context'
+      home_enabled = false
+
+  [[blocks.segments]]
+    type = 'cmake'
+    style = 'plain'
+    template = '<p:bracket>-[</><p:cmake> cmake {{ .Full }}</><p:bracket>]</>'
+
+    [blocks.segments.properties]
+      cache_duration = 'none'
+      display_mode = 'context'
+      home_enabled = false
+
+  [[blocks.segments]]
+    type = 'docker'
+    style = 'plain'
+    template = '<p:bracket>-[</><p:docker> {{ .Context }}</><p:bracket>]</>'
+
+    [blocks.segments.properties]
+      cache_duration = 'none'
 
 [[blocks]]
   type = 'rprompt'
