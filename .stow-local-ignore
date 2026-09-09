@@ -27,3 +27,4 @@ _darcs
 ^/reference
 ^/\.omo
 ^/\.codegraph
+^/\.config/quickshell-legacy/\.qmlls\.ini$

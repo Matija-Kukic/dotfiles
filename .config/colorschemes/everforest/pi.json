@@ -1,0 +1,30 @@
+{
+  "$schema": "https://raw.githubusercontent.com/earendil-works/pi/main/packages/coding-agent/src/modes/interactive/theme/theme-schema.json",
+  "name": "everforest",
+  "vars": {
+    "bg": "#272e33", "panel": "#2e383c", "surface": "#374145", "selected": "#465258",
+    "text": "#d3c6aa", "subtext": "#b8b39a", "muted": "#9da9a0", "green": "#a7c080",
+    "aqua": "#83c092", "blue": "#7fbbb3", "yellow": "#dbbc7f", "orange": "#e69875",
+    "red": "#e67e80", "purple": "#d699b6"
+  },
+  "colors": {
+    "accent": "green", "border": "blue", "borderAccent": "aqua", "borderMuted": "surface",
+    "success": "green", "error": "red", "warning": "orange", "muted": "subtext", "dim": "muted",
+    "text": "text", "thinkingText": "blue", "scrollbarTrack": "surface", "scrollbarThumb": "green",
+    "selectedBg": "selected", "searchMatchBg": "yellow", "searchMatchText": "bg",
+    "userMessageBg": "surface", "userMessageText": "text", "customMessageBg": "panel",
+    "customMessageText": "text", "customMessageLabel": "orange", "toolPendingBg": "panel",
+    "toolSuccessBg": "#304039", "toolErrorBg": "#433638", "toolTitle": "yellow", "toolOutput": "text",
+    "mdHeading": "orange", "mdLink": "blue", "mdLinkUrl": "muted", "mdCode": "aqua",
+    "mdCodeBlock": "text", "mdCodeBlockBorder": "green", "mdQuote": "yellow",
+    "mdQuoteBorder": "orange", "mdHr": "surface", "mdListBullet": "green",
+    "toolDiffAdded": "green", "toolDiffRemoved": "red", "toolDiffContext": "muted",
+    "syntaxComment": "muted", "syntaxKeyword": "red", "syntaxFunction": "green",
+    "syntaxVariable": "blue", "syntaxString": "aqua", "syntaxNumber": "purple",
+    "syntaxType": "yellow", "syntaxOperator": "orange", "syntaxPunctuation": "subtext",
+    "thinkingOff": "surface", "thinkingMinimal": "muted", "thinkingLow": "blue",
+    "thinkingMedium": "aqua", "thinkingHigh": "green", "thinkingXhigh": "yellow", "thinkingMax": "orange",
+    "bashMode": "green"
+  },
+  "export": { "pageBg": "bg", "cardBg": "panel", "infoBg": "surface" }
+}
