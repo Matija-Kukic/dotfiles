@@ -8,8 +8,14 @@ return {
 					"lua_ls",
 					"pylsp",
 					"pyright",
+					"ruff",
 					"clangd",
 					"texlab",
+					"rust-analyzer",
+					"shellcheck",
+					"shfmt",
+					"bash-language-server",
+					"marksman",
 				},
 			})
 		end,
@@ -48,6 +54,12 @@ return {
 		"stevearc/conform.nvim",
 		config = function()
 			require("matijak.plugins.config.conform")
+		end,
+	},
+	{
+		"mfussenegger/nvim-lint",
+		config = function()
+			require("matijak.plugins.config.lint")
 		end,
 	},
 }

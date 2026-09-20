@@ -4,7 +4,12 @@ conform.setup({
 	-- Definiramo koji jezici koriste koje formatere
 	formatters_by_ft = {
 		lua = { "stylua" },
-		python = { "black" },
+		python = { "ruff_organize_imports", "ruff_format" },
+		sh = { "shfmt" },
+		bash = { "shfmt" },
+		zsh = { "shfmt" },
+		rust = { "rustfmt" },
+		markdown = { "injected" },
 		c = { "clang_wrapper" },
 		h = { "clang_wrapper" },
 		cpp = { "clang_wrapper" },

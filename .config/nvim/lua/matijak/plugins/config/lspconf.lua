@@ -21,12 +21,44 @@ vim.lsp.config("pyright", {
 })
 vim.lsp.enable("pyright")
 
+-- Ruff (Python linter + fixes via LSP)
+vim.lsp.config("ruff", {
+	capabilities = capabilities,
+	init_options = {
+		settings = {
+			-- Conform handles formatting (ruff_format); turn ruff's own format off
+			format = { enable = false },
+		},
+	},
+})
+vim.lsp.enable("ruff")
+
+-- Rust
+vim.lsp.config("rust_analyzer", {
+	capabilities = capabilities,
+	settings = {
+		["rust-analyzer"] = {
+			diagnostics = {
+				enable = true,
+			},
+		},
+	},
+})
+vim.lsp.enable("rust_analyzer")
+
+-- Bash / Zsh
+vim.lsp.enable("bashls")
+
+-- Markdown
+vim.lsp.enable("marksman")
+
 -- C / C++
 vim.lsp.config("clangd", {
 	capabilities = capabilities,
 	cmd = {
 		"clangd",
 		"--background-index",
+		"--clang-tidy",
 		"--query-driver=/usr/bin/gcc,/usr/bin/g++",
 	},
 })
